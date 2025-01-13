@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import { JoinUs } from "./pages/JoinUs";
 import { Register } from "./pages/Register";
 import { AuthProvider } from "./Auth/AuthContext";
+import AvailableCamps from "./pages/AvailableCamps";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/available-camps",
+        element: <AvailableCamps />,
       },
     ],
     // errorElement: <ErrorPage />,

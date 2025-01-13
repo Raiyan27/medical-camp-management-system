@@ -14,7 +14,7 @@ const CampDetails = () => {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 px-8 md:px-0">
       <img
         src={camp.image}
         alt={camp.name}
