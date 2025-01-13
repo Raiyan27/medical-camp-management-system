@@ -1,14 +1,25 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../Auth/AuthContext";
+import { getAuth, signOut } from "firebase/auth";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const [user, setUser] = useState();
+  const { currentUser } = useContext(AuthContext);
+  console.log(currentUser);
+  const location = useLocation();
+  const auth = getAuth();
 
-  const handleLogout = () => {
-    console.log("User logged out");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast("Logged out successfully!");
+      navigate("/");
+    } catch (error) {
+      toast("Error Logging out!");
+    }
   };
 
   return (
@@ -30,7 +41,7 @@ const Navbar = () => {
           <Link to="/available-camps" className="hover:text-secondary">
             Available Camps
           </Link>
-          {!user && (
+          {!currentUser && (
             <Link
               to="/join-us"
               className="bg-white text-primary px-4 py-2 rounded hover:bg-gray-100"
@@ -62,17 +73,19 @@ const Navbar = () => {
           </button>
         </div>
 
-        {user && (
+        {currentUser && (
           <div className="relative">
             <img
-              src={user.profilePicture}
+              src={currentUser.photoURL}
               alt="Profile"
               className="h-10 w-10 rounded-full cursor-pointer"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             />
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
-                <p className="block px-4 py-2 text-sm font-bold">{user.name}</p>
+                <p className="block px-4 py-2 text-sm font-bold">
+                  {currentUser.name}
+                </p>
                 <Link
                   to="/dashboard"
                   className="block px-4 py-2 text-sm hover:bg-gray-100"
@@ -91,7 +104,7 @@ const Navbar = () => {
         )}
       </div>
 
-      {isDropdownOpen && !user && (
+      {isDropdownOpen && !currentUser && (
         <div className="md:hidden mt-4 space-y-2">
           <Link to="/" className="block text-white hover:text-secondary">
             Home

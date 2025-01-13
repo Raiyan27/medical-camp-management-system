@@ -3,11 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
+import { ToastContainer } from "react-toastify";
 
 import Navbar from "./components/Navbar";
 import Root from "./pages/Root";
 import Home from "./pages/Home";
 import { JoinUs } from "./pages/JoinUs";
+import { Register } from "./pages/Register";
+import { AuthProvider } from "./Auth/AuthContext";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -21,6 +24,10 @@ const router = createBrowserRouter([
         path: "/join-us",
         element: <JoinUs />,
       },
+      {
+        path: "/register",
+        element: <Register />,
+      },
     ],
     // errorElement: <ErrorPage />,
   },
@@ -28,8 +35,11 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+      <ToastContainer position="top-center" />
+    </AuthProvider>
   </StrictMode>
 );

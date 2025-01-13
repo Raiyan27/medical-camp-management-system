@@ -6,44 +6,83 @@ import {
   CardFooter,
   Typography,
   Input,
-  Checkbox,
   Button,
 } from "@material-tailwind/react";
 import Lottie from "lottie-react";
 import animationData from "../animations/login_animation.json";
 import {
   auth,
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
 } from "../Auth/firebase.init";
-import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useNavigate, Link } from "react-router-dom";
+import { useDropzone } from "react-dropzone";
+import axios from "axios";
 
-export function JoinUs() {
-  const navigate = useNavigate();
+export function Register() {
   const [isLoading, setIsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const navigate = useNavigate();
 
-  const handleEmailPasswordLogin = async (data) => {
-    const { email, password } = data;
+  const handleImageDrop = (acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      setImageFile(acceptedFiles[0]);
+    }
+  };
+
+  const uploadImageToImgBB = async (image) => {
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const imgbbAPIKey = "YOUR_IMGBB_API_KEY";
+    const url = `https://api.imgbb.com/1/upload?key=${imgbbAPIKey}`;
 
     try {
-      setIsLoading(true);
-      const userCredential = await signInWithEmailAndPassword(
+      const response = await axios.post(url, formData);
+      return response.data.data.url;
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      return null;
+    }
+  };
+
+  const handleRegister = async (data) => {
+    const { name, email, password } = data;
+    setIsLoading(true);
+
+    try {
+      let profileImageUrl = null;
+
+      if (imageFile) {
+        profileImageUrl = await uploadImageToImgBB(imageFile);
+      }
+
+      // Create user with Firebase
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      toast.success("Login Successful!");
+      const user = userCredential.user;
+      await updateProfile(user, {
+        displayName: name,
+        photoURL: profileImageUrl || "",
+      });
+
+      toast.success("Registration successful!");
       navigate("/");
     } catch (error) {
-      toast.error("Invalid email or password.");
+      console.error(error);
+      toast.error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -59,14 +98,22 @@ export function JoinUs() {
       toast.success(`Welcome, ${user.displayName}!`);
       navigate("/");
     } catch (error) {
+      console.error(error);
       toast.error("Google login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleImageDrop,
+    accept: "image/*",
+    maxFiles: 1,
+  });
+
   return (
     <div className="min-h-screen flex flex-row-reverse items-center justify-center mx-4">
+      {/* Lottie Animation */}
       <div className="ml-2 hidden md:flex">
         <Lottie animationData={animationData} loop={true} />
       </div>
@@ -78,12 +125,27 @@ export function JoinUs() {
           className="mb-4 grid h-28 place-items-center"
         >
           <Typography variant="h3" color="white">
-            Join Us
+            Register
           </Typography>
         </CardHeader>
 
-        <form onSubmit={handleSubmit(handleEmailPasswordLogin)}>
+        <form onSubmit={handleSubmit(handleRegister)}>
           <CardBody className="flex flex-col gap-4">
+            {/* Name Field */}
+            <Input
+              label="Name"
+              size="lg"
+              type="text"
+              {...register("name", { required: "Name is required" })}
+              error={errors.name ? true : false}
+            />
+            {errors.name && (
+              <Typography variant="small" color="red">
+                {errors.name.message}
+              </Typography>
+            )}
+
+            {/* Email Field */}
             <Input
               label="Email"
               size="lg"
@@ -103,6 +165,7 @@ export function JoinUs() {
               </Typography>
             )}
 
+            {/* Password Field */}
             <Input
               label="Password"
               size="lg"
@@ -122,30 +185,40 @@ export function JoinUs() {
               </Typography>
             )}
 
-            {/* <div className="flex items-center justify-between -ml-2.5">
-              <Checkbox label="Remember Me" />
+            {/* Drag-and-Drop Image Upload */}
+            <div
+              {...getRootProps()}
+              className={`border-dashed border-2 p-4 rounded-lg ${
+                isDragActive ? "border-blue-500" : "border-gray-300"
+              }`}
+            >
+              <input {...getInputProps()} />
               <Typography
-                as="a"
-                href="#forgot-password"
                 variant="small"
-                color="blue"
-                className="font-medium underline"
+                color="blue-gray"
+                className="text-center"
               >
-                Forgot Password?
+                {imageFile
+                  ? `Selected file: ${imageFile.name}`
+                  : isDragActive
+                  ? "Drop the image here..."
+                  : "Drag and drop an image here, or click to select one"}
               </Typography>
-            </div> */}
+            </div>
           </CardBody>
 
           <CardFooter className="pt-0">
+            {/* Submit Button */}
             <Button
               type="submit"
               variant="gradient"
               fullWidth
               disabled={isLoading}
             >
-              {isLoading ? "Logging in..." : "Join us"}
+              {isLoading ? "Registering..." : "Register"}
             </Button>
 
+            {/* Google Login Button */}
             <Button
               variant="outlined"
               color="blue"
@@ -162,10 +235,11 @@ export function JoinUs() {
               {isLoading ? "Please wait..." : "Continue with Google"}
             </Button>
 
+            {/* Login Link */}
             <Typography variant="small" className="mt-6 flex justify-center">
-              Don&apos;t have an account?
-              <Link to="/register" className="ml-1 text-blue-500 font-bold">
-                Register
+              Already have an account?
+              <Link to="/login" className="ml-1 text-blue-500 font-bold">
+                Login
               </Link>
             </Typography>
           </CardFooter>
