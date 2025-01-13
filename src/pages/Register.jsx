@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 export function Register() {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +32,7 @@ export function Register() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const handleImageDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -66,7 +67,6 @@ export function Register() {
         profileImageUrl = await uploadImageToImgBB(imageFile);
       }
 
-      // Create user with Firebase
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -77,9 +77,17 @@ export function Register() {
         displayName: name,
         photoURL: profileImageUrl || "",
       });
-
-      toast.success("Registration successful!");
-      navigate("/");
+      const userInfo = {
+        name: name,
+        email: email,
+      };
+      axiosPublic.post("/user", userInfo).then((res) => {
+        if (res.data.insertedId) {
+          console.log(`user added ${userInfo}`);
+          toast.success("Registration successful!");
+          navigate("/");
+        }
+      });
     } catch (error) {
       console.error(error);
       toast.error("Registration failed. Please try again.");
@@ -95,8 +103,14 @@ export function Register() {
       setIsLoading(true);
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      toast.success(`Welcome, ${user.displayName}!`);
-      navigate("/");
+      const userInfo = {
+        name: result.user?.displayName,
+        email: result.user?.email,
+      };
+      axiosPublic.post("/user", userInfo).then((res) => {
+        toast.success("Successfully logged in!");
+        navigate("/");
+      });
     } catch (error) {
       console.error(error);
       toast.error("Google login failed. Please try again.");
@@ -113,7 +127,6 @@ export function Register() {
 
   return (
     <div className="min-h-screen flex flex-row-reverse items-center justify-center mx-4">
-      {/* Lottie Animation */}
       <div className="ml-2 hidden md:flex">
         <Lottie animationData={animationData} loop={true} />
       </div>
@@ -131,7 +144,6 @@ export function Register() {
 
         <form onSubmit={handleSubmit(handleRegister)}>
           <CardBody className="flex flex-col gap-4">
-            {/* Name Field */}
             <Input
               label="Name"
               size="lg"
@@ -145,7 +157,6 @@ export function Register() {
               </Typography>
             )}
 
-            {/* Email Field */}
             <Input
               label="Email"
               size="lg"
@@ -165,7 +176,6 @@ export function Register() {
               </Typography>
             )}
 
-            {/* Password Field */}
             <Input
               label="Password"
               size="lg"
@@ -185,7 +195,6 @@ export function Register() {
               </Typography>
             )}
 
-            {/* Drag-and-Drop Image Upload */}
             <div
               {...getRootProps()}
               className={`border-dashed border-2 p-4 rounded-lg ${
@@ -208,7 +217,6 @@ export function Register() {
           </CardBody>
 
           <CardFooter className="pt-0">
-            {/* Submit Button */}
             <Button
               type="submit"
               variant="gradient"
@@ -218,7 +226,6 @@ export function Register() {
               {isLoading ? "Registering..." : "Register"}
             </Button>
 
-            {/* Google Login Button */}
             <Button
               variant="outlined"
               color="blue"
@@ -235,7 +242,6 @@ export function Register() {
               {isLoading ? "Please wait..." : "Continue with Google"}
             </Button>
 
-            {/* Login Link */}
             <Typography variant="small" className="mt-6 flex justify-center">
               Already have an account?
               <Link to="/login" className="ml-1 text-blue-500 font-bold">

@@ -20,6 +20,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 export function JoinUs() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export function JoinUs() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const axiosPublic = useAxiosPublic();
 
   const handleEmailPasswordLogin = async (data) => {
     const { email, password } = data;
@@ -56,8 +58,14 @@ export function JoinUs() {
       setIsLoading(true);
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      toast.success(`Welcome, ${user.displayName}!`);
-      navigate("/");
+      const userInfo = {
+        name: result.user?.displayName,
+        email: result.user?.email,
+      };
+      axiosPublic.post("/user", userInfo).then((res) => {
+        toast.success(`Welcome, ${user.displayName}!`);
+        navigate("/");
+      });
     } catch (error) {
       toast.error("Google login failed. Please try again.");
     } finally {
