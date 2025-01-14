@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 
-const DashboardLayout = () => {
+const UserDashboard = () => {
   return (
     <div className="min-h-screen flex">
       <div className="w-64 bg-gray-800 text-white p-6">
@@ -39,4 +39,4 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+export default UserDashboard;

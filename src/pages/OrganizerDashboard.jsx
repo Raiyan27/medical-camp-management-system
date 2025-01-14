@@ -30,7 +30,7 @@ const OrganizerDashboard = () => {
         </ul>
       </div>
 
-      <div className="flex-1 ml-64 p-8 overflow-auto">
+      <div className="flex-1 p-8">
         <h1 className="text-3xl font-bold mb-8">Organizer Dashboard</h1>
 
         <Outlet />
