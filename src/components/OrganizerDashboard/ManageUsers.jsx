@@ -1,41 +1,27 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import Search from "../Search";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+
+const fetchRegistrations = async (axiosPublic) => {
+  const response = await axiosPublic.get("/get-all-registrations");
+  return response.data.registrations;
+};
 
 const ManageUsers = () => {
-  const [registrations, setRegistrations] = useState([
-    {
-      id: 1,
-      participantName: "John Doe",
-      campName: "Health Awareness Camp",
-      campFees: "$20",
-      paymentStatus: "Unpaid",
-      confirmationStatus: "Pending",
-    },
-    {
-      id: 2,
-      participantName: "Jane Smith",
-      campName: "Free Eye Checkup",
-      campFees: "$0",
-      paymentStatus: "Paid",
-      confirmationStatus: "Pending",
-    },
-    {
-      id: 3,
-      participantName: "Michael Lee",
-      campName: "Health Awareness Camp",
-      campFees: "$20",
-      paymentStatus: "Paid",
-      confirmationStatus: "Confirmed",
-    },
-  ]);
+  const axiosPublic = useAxiosPublic();
+  const { data, status, error } = useQuery({
+    queryKey: ["registrations"],
+    queryFn: () => fetchRegistrations(axiosPublic),
+  });
 
-  const [filteredRegistrations, setFilteredRegistrations] =
-    useState(registrations);
+  const [filteredRegistrations, setFilteredRegistrations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [registrationsPerPage] = useState(10);
 
   const handleSearch = (searchTerm) => {
-    const filteredData = registrations.filter(
+    const filteredData = data.filter(
       (reg) =>
         reg.participantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,17 +33,15 @@ const ManageUsers = () => {
   };
 
   const handleConfirm = (id) => {
-    const updatedRegistrations = registrations.map((reg) =>
+    const updatedRegistrations = data.map((reg) =>
       reg.id === id ? { ...reg, confirmationStatus: "Confirmed" } : reg
     );
-    setRegistrations(updatedRegistrations);
     setFilteredRegistrations(updatedRegistrations);
   };
 
   const handleCancel = (id) => {
     if (window.confirm("Are you sure you want to cancel this registration?")) {
-      const updatedRegistrations = registrations.filter((reg) => reg.id !== id);
-      setRegistrations(updatedRegistrations);
+      const updatedRegistrations = data.filter((reg) => reg.id !== id);
       setFilteredRegistrations(updatedRegistrations);
     }
   };
@@ -77,6 +61,18 @@ const ManageUsers = () => {
   const totalPages = Math.ceil(
     filteredRegistrations.length / registrationsPerPage
   );
+
+  if (status === "loading") {
+    return <p>Loading registrations...</p>;
+  }
+
+  if (status === "error") {
+    return <p>Error fetching registrations: {error.message}</p>;
+  }
+
+  if (data && filteredRegistrations.length === 0) {
+    setFilteredRegistrations(data);
+  }
 
   return (
     <div className="border p-6 rounded-lg shadow-lg">
@@ -99,9 +95,9 @@ const ManageUsers = () => {
           <tbody>
             {currentRegistrations.map((reg) => (
               <tr key={reg.id} className="border-b">
-                <td className="p-3">{reg.participantName}</td>
+                <td className="p-3">{reg.userName}</td>
                 <td className="p-3">{reg.campName}</td>
-                <td className="p-3">{reg.campFees}</td>
+                <td className="p-3">{reg.fees}</td>
                 <td className="p-3">
                   <span
                     className={`${

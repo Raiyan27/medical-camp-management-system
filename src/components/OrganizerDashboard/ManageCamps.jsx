@@ -1,33 +1,28 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 import Search from "../Search";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+
+const fetchCamps = async (axiosPublic) => {
+  const response = await axiosPublic.get("/camps");
+  return response.data.camps;
+};
 
 const ManageCamps = () => {
-  const [camps, setCamps] = useState([
-    {
-      id: 1,
-      name: "Health Awareness Camp",
-      date: "2025-02-15",
-      location: "Community Hall A",
-      professional: "Dr. Alice Smith",
-      participantCount: 45,
-    },
-    {
-      id: 2,
-      name: "Free Eye Checkup",
-      date: "2025-03-10",
-      location: "City Clinic B",
-      professional: "Dr. Bob Johnson",
-      participantCount: 60,
-    },
-  ]);
+  const axiosPublic = useAxiosPublic();
+  const { data, status, error } = useQuery({
+    queryKey: ["camps"],
+    queryFn: () => fetchCamps(axiosPublic),
+  });
 
-  const [filteredCamps, setFilteredCamps] = useState(camps);
+  const [filteredCamps, setFilteredCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
 
   const handleSearch = (searchTerm) => {
-    const filteredData = camps.filter(
+    const filteredData = data.filter(
       (camp) =>
         camp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         camp.date.includes(searchTerm) ||
@@ -39,9 +34,25 @@ const ManageCamps = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this camp?")) {
-      const updatedCamps = camps.filter((camp) => camp.id !== id);
-      setCamps(updatedCamps);
-      setFilteredCamps(updatedCamps);
+      axiosPublic
+        .delete(`/camps/${id}`)
+        .then(() => {
+          Swal.fire({
+            title: "Deleted!",
+            text: "The camp has been deleted.",
+            icon: "success",
+          });
+          const updatedCamps = filteredCamps.filter((camp) => camp.id !== id);
+          setFilteredCamps(updatedCamps);
+        })
+        .catch((err) => {
+          console.error("Error deleting camp", err);
+          Swal.fire({
+            title: "Error!",
+            text: "There was an error deleting the camp.",
+            icon: "error",
+          });
+        });
     }
   };
 
@@ -54,6 +65,16 @@ const ManageCamps = () => {
   };
 
   const totalPages = Math.ceil(filteredCamps.length / campsPerPage);
+  if (status === "loading") {
+    return <p>Loading camps...</p>;
+  }
+  if (status === "error") {
+    return <p>Error fetching camps: {error.message}</p>;
+  }
+
+  if (data && filteredCamps.length === 0) {
+    setFilteredCamps(data);
+  }
 
   return (
     <div className="border p-6 rounded-lg shadow-lg">
@@ -66,7 +87,7 @@ const ManageCamps = () => {
           <thead>
             <tr className="bg-gray-200">
               <th className="p-3 text-left">Camp Name</th>
-              <th className="p-3 text-left">Date & Time</th>
+              <th className="p-3 text-left">Date</th>
               <th className="p-3 text-left">Location</th>
               <th className="p-3 text-left">Healthcare Professional</th>
               <th className="p-3 text-left">Participants</th>
@@ -76,10 +97,10 @@ const ManageCamps = () => {
           <tbody>
             {currentCamps.map((camp) => (
               <tr key={camp.id} className="border-b">
-                <td className="p-3">{camp.name}</td>
-                <td className="p-3">{camp.date}</td>
+                <td className="p-3">{camp.campName}</td>
+                <td className="p-3">{camp.dateTime.slice(0, 10)}</td>
                 <td className="p-3">{camp.location}</td>
-                <td className="p-3">{camp.professional}</td>
+                <td className="p-3">{camp.professionalName}</td>
                 <td className="p-3">{camp.participantCount}</td>
                 <td className="p-3 flex items-center">
                   <Link

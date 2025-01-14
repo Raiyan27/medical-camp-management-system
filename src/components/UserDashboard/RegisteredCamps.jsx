@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -26,9 +26,15 @@ const RegisteredCamps = () => {
     enabled: !!email,
   });
 
-  const [filteredCamps, setFilteredCamps] = useState(data || []);
+  const [filteredCamps, setFilteredCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
+
+  useEffect(() => {
+    if (data) {
+      setFilteredCamps(data);
+    }
+  }, [data]);
 
   const handlePayment = (campId) => {
     navigate(`/payment/${campId}`);
@@ -92,11 +98,11 @@ const RegisteredCamps = () => {
   if (status === "error") return <p>An error occurred</p>;
 
   return (
-    <div className="border p-6 rounded-lg shadow-lg">
+    <div className="border p-6 rounded-lg shadow-lg ">
       <h3 className="text-2xl font-semibold mb-4">Registered Camps</h3>
       <Search onSearch={handleSearch} />
       <div className="overflow-x-auto">
-        <table className="w-full table-auto border-collapse">
+        <table className="min-w-full overflow">
           <thead>
             <tr className="bg-gray-200">
               <th className="p-3 text-left">Camp Name</th>
@@ -105,6 +111,7 @@ const RegisteredCamps = () => {
               <th className="p-3 text-left">Payment Status</th>
               <th className="p-3 text-left">Confirmation Status</th>
               <th className="p-3 text-left">Actions</th>
+              <th className="p-3 text-left">Feedback</th>
             </tr>
           </thead>
           <tbody>
