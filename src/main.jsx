@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import { ToastContainer } from "react-toastify";
 
+import Navbar from "./components/Navbar";
 import Root from "./pages/Root";
 import Home from "./pages/Home";
 import { JoinUs } from "./pages/JoinUs";
@@ -13,6 +14,7 @@ import { AuthProvider } from "./Auth/AuthContext";
 import AvailableCamps from "./pages/AvailableCamps";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import OrganizerProfile from "./components/OrganizerDashboard/OrganizerProfile";
+import AddCamp from "./components/OrganizerDashboard/AddCamp";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +44,10 @@ const router = createBrowserRouter([
           {
             path: "profile",
             element: <OrganizerProfile />,
+          },
+          {
+            path: "add-camp",
+            element: <AddCamp />,
           },
         ],
       },
