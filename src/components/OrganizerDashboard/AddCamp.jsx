@@ -2,17 +2,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 const AddCamp = () => {
-  // Initialize useForm from React Hook Form
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  // Handle form submission
   const onSubmit = (data) => {
     console.log("Camp added:", data);
-    // Here you can send the form data to the server or update the state
   };
 
   return (
@@ -20,7 +17,6 @@ const AddCamp = () => {
       <h2 className="text-2xl font-semibold mb-4">Add A Camp</h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Camp Name Field */}
         <div className="mb-4">
           <label
             className="block text-sm font-semibold mb-2"
@@ -40,7 +36,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Image Field */}
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-2" htmlFor="image">
             Image URL
@@ -57,7 +52,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Camp Fees Field */}
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-2" htmlFor="fees">
             Camp Fees
@@ -80,7 +74,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Date & Time Field */}
         <div className="mb-4">
           <label
             className="block text-sm font-semibold mb-2"
@@ -101,7 +94,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Location Field */}
         <div className="mb-4">
           <label
             className="block text-sm font-semibold mb-2"
@@ -121,7 +113,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Healthcare Professional Field */}
         <div className="mb-4">
           <label
             className="block text-sm font-semibold mb-2"
@@ -145,7 +136,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Participant Count Field */}
         <div className="mb-4">
           <label
             className="block text-sm font-semibold mb-2"
@@ -170,7 +160,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Description Field */}
         <div className="mb-4">
           <label
             className="block text-sm font-semibold mb-2"
@@ -191,7 +180,6 @@ const AddCamp = () => {
           )}
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className="bg-primary hover:bg-accent text-white px-6 py-2 rounded"
