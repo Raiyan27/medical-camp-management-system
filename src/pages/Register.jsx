@@ -44,11 +44,11 @@ export function Register() {
     const formData = new FormData();
     formData.append("image", image);
 
-    const imgbbAPIKey = "YOUR_IMGBB_API_KEY";
+    const imgbbAPIKey = import.meta.env.VITE_IMGBB_IMAGE_API_KEY;
     const url = `https://api.imgbb.com/1/upload?key=${imgbbAPIKey}`;
 
     try {
-      const response = await axios.post(url, formData);
+      const response = await axiosPublic.post(url, formData);
       return response.data.data.url;
     } catch (error) {
       console.error("Image upload failed:", error);

@@ -5,13 +5,15 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import { ToastContainer } from "react-toastify";
 
-import Navbar from "./components/Navbar";
 import Root from "./pages/Root";
 import Home from "./pages/Home";
 import { JoinUs } from "./pages/JoinUs";
 import { Register } from "./pages/Register";
 import { AuthProvider } from "./Auth/AuthContext";
 import AvailableCamps from "./pages/AvailableCamps";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import OrganizerProfile from "./components/OrganizerDashboard/OrganizerProfile";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -33,7 +35,18 @@ const router = createBrowserRouter([
         path: "/available-camps",
         element: <AvailableCamps />,
       },
+      {
+        path: "/organizer-dashboard",
+        element: <OrganizerDashboard />,
+        children: [
+          {
+            path: "profile",
+            element: <OrganizerProfile />,
+          },
+        ],
+      },
     ],
+
     // errorElement: <ErrorPage />,
   },
 ]);

@@ -22,7 +22,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-primary text-white py-4 px-6">
+    <nav className="bg-primary text-white py-4 px-6 sticky top-0 z-50">
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-3">
           <img
