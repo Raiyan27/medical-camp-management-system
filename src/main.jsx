@@ -17,6 +17,9 @@ import OrganizerProfile from "./components/OrganizerDashboard/OrganizerProfile";
 import AddCamp from "./components/OrganizerDashboard/AddCamp";
 import ManageUsers from "./components/OrganizerDashboard/ManageUsers";
 import ManageCamps from "./components/OrganizerDashboard/ManageCamps";
+import CampDetails from "./pages/CampDetails";
+import PrivateRoute from "./utils/PrivateRoute";
+import UserDashboard from "./pages/UserDashboard";
 
 const queryClient = new QueryClient();
 const router = createBrowserRouter([
@@ -41,8 +44,16 @@ const router = createBrowserRouter([
         element: <AvailableCamps />,
       },
       {
+        path: "/camp-details/:id",
+        element: <CampDetails />,
+      },
+      {
         path: "/organizer-dashboard",
-        element: <OrganizerDashboard />,
+        element: (
+          <PrivateRoute>
+            <OrganizerDashboard />
+          </PrivateRoute>
+        ),
         children: [
           {
             path: "profile",
@@ -59,6 +70,32 @@ const router = createBrowserRouter([
           {
             path: "manage-users",
             element: <ManageUsers />,
+          },
+        ],
+      },
+      {
+        path: "/user-dashboard",
+        element: (
+          <PrivateRoute>
+            <UserDashboard />
+          </PrivateRoute>
+        ),
+        children: [
+          {
+            path: "analytics",
+            element: <div>hello</div>,
+          },
+          {
+            path: "profile",
+            element: <div>hello</div>,
+          },
+          {
+            path: "registered-camps",
+            element: <div>hello</div>,
+          },
+          {
+            path: "payment-history",
+            element: <div>hello</div>,
           },
         ],
       },
