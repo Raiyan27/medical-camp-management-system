@@ -22,11 +22,11 @@ const Analytics = () => {
   const participantId = "current-participant-id";
   const axiosPublic = useAxiosPublic();
 
-  const { data, status } = useQuery(
-    ["analyticsData", participantId],
-    () => fetchAnalyticsData(participantId, axiosPublic),
-    { enabled: !!participantId }
-  );
+  const { data, status } = useQuery({
+    queryKey: ["analyticsData", participantId],
+    queryFn: () => fetchAnalyticsData(participantId, axiosPublic),
+    enabled: !!participantId,
+  });
 
   if (status === "loading") return <p>Loading analytics...</p>;
   if (status === "error") return <p>An error occurred</p>;

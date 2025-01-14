@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../../Auth/AuthContext";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import EditUserProfileModal from "./EditUserProfileModal";
+import { Spinner } from "@material-tailwind/react";
 
 const UserProfile = () => {
   const { currentUser } = useContext(AuthContext);
@@ -32,7 +33,12 @@ const UserProfile = () => {
     refetch();
   };
 
-  if (isLoading) return <p>Loading profile...</p>;
+  if (isLoading)
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <Spinner className="h-10 w-10" />
+      </div>
+    );
   if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
@@ -61,8 +67,9 @@ const UserProfile = () => {
           <label className="block text-sm">Age</label>
           <input
             type="number"
-            value={data?.age || "Unavailable"}
+            value={data?.age || ""}
             readOnly
+            placeholder={data?.age ? "" : "Unavailable"}
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>

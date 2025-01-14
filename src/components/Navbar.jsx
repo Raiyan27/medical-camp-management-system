@@ -15,6 +15,7 @@ const Navbar = () => {
     try {
       await signOut(auth);
       toast("Logged out successfully!");
+      setIsDropdownOpen(false);
       navigate("/");
     } catch (error) {
       toast("Error Logging out!");

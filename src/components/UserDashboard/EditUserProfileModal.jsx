@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Select from "react-select";
 
 const EditUserProfileModal = ({
   currentUser,
@@ -9,6 +10,7 @@ const EditUserProfileModal = ({
   onProfileUpdated,
 }) => {
   const axiosPublic = useAxiosPublic();
+
   const [formData, setFormData] = useState({
     name: data?.name || "",
     email: data?.email || "",
@@ -18,12 +20,61 @@ const EditUserProfileModal = ({
     emergencyContact: data?.emergencyContact || "",
   });
 
+  const [errors, setErrors] = useState({
+    name: "",
+    age: "",
+    phoneNumber: "",
+    gender: "",
+    emergencyContact: "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const handleGenderChange = (selectedOption) => {
+    setFormData((prevData) => ({ ...prevData, gender: selectedOption.value }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (!formData.name) {
+      newErrors.name = "Name is required.";
+      isValid = false;
+    }
+
+    if (!formData.age) {
+      newErrors.age = "Age is required.";
+      isValid = false;
+    }
+
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "Phone number is required.";
+      isValid = false;
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = "Gender is required.";
+      isValid = false;
+    }
+
+    if (!formData.emergencyContact) {
+      newErrors.emergencyContact = "Emergency contact is required.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSaveChanges = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const response = await axiosPublic.put("/user", formData);
 
@@ -40,6 +91,11 @@ const EditUserProfileModal = ({
     }
   };
 
+  const genderOptions = [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+  ];
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
@@ -47,7 +103,7 @@ const EditUserProfileModal = ({
     >
       <div
         className="bg-white p-8 rounded-lg max-w-lg mx-auto z-50"
-        onClick={(e) => e.stopPropagation()} // Prevent modal close on click inside
+        onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-2xl font-bold mb-6">Edit Profile</h3>
 
@@ -61,7 +117,11 @@ const EditUserProfileModal = ({
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
+            {errors.name && (
+              <p className="text-red-500 text-xs">{errors.name}</p>
+            )}
           </div>
+
           <div>
             <label className="block text-sm">Email</label>
             <input
@@ -73,6 +133,7 @@ const EditUserProfileModal = ({
               readOnly
             />
           </div>
+
           <div>
             <label className="block text-sm">Age</label>
             <input
@@ -82,7 +143,9 @@ const EditUserProfileModal = ({
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
+            {errors.age && <p className="text-red-500 text-xs">{errors.age}</p>}
           </div>
+
           <div>
             <label className="block text-sm">Phone Number</label>
             <input
@@ -92,17 +155,26 @@ const EditUserProfileModal = ({
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
+            {errors.phoneNumber && (
+              <p className="text-red-500 text-xs">{errors.phoneNumber}</p>
+            )}
           </div>
+
           <div>
             <label className="block text-sm">Gender</label>
-            <input
-              type="text"
+            <Select
               name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded"
+              value={genderOptions.find(
+                (option) => option.value === formData.gender
+              )}
+              onChange={handleGenderChange}
+              options={genderOptions}
             />
+            {errors.gender && (
+              <p className="text-red-500 text-xs">{errors.gender}</p>
+            )}
           </div>
+
           <div>
             <label className="block text-sm">Emergency Contact</label>
             <input
@@ -112,6 +184,9 @@ const EditUserProfileModal = ({
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
+            {errors.emergencyContact && (
+              <p className="text-red-500 text-xs">{errors.emergencyContact}</p>
+            )}
           </div>
 
           <button
@@ -120,6 +195,7 @@ const EditUserProfileModal = ({
           >
             Save Changes
           </button>
+
           <button
             onClick={onClose}
             className="mt-4 bg-gray-600 text-white px-6 py-2 rounded-lg ml-2"
