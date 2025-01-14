@@ -56,7 +56,7 @@ const AvailableCamps = () => {
     : sortedCamps;
 
   return (
-    <div className="max-w-screen-xl mx-auto my-8 px-4">
+    <div className="max-w-screen-xl mx-auto my-8 px-4 min-h-screen">
       <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
         <div className="flex-1">
           <Search onSearch={setSearch} />
@@ -77,7 +77,7 @@ const AvailableCamps = () => {
 
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {filteredCamps.length === 0 ? (
-          <p className="col-span-full text-center">
+          <p className="col-span-full text-center text-4xl">
             No camps found based on your search criteria.
           </p>
         ) : (

@@ -21,8 +21,9 @@ import CampDetails from "./pages/CampDetails";
 import PrivateRoute from "./utils/PrivateRoute";
 import UserDashboard from "./pages/UserDashboard";
 import Analytics from "./components/UserDashboard/Analytics";
-import UserProfile from "./components/UserDashboard/UserProfile";
+
 import RegisteredCamps from "./components/UserDashboard/RegisteredCamps";
+import UserProfile from "./components/UserDashboard/UserProfile";
 
 const queryClient = new QueryClient();
 const router = createBrowserRouter([

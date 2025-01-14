@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 const UserDashboard = () => {
   return (
     <div className="min-h-screen flex">
-      <div className="w-64 bg-gray-800 text-white p-6">
+      <div className="w-44 bg-gray-800 text-white p-6">
         <h2 className="text-2xl font-bold mb-6">Participant Dashboard</h2>
         <ul>
           <li>

@@ -1,34 +1,50 @@
-import { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AuthContext } from "../../Auth/AuthContext";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import EditUserProfileModal from "./EditUserProfileModal";
 
 const UserProfile = () => {
-  const [profile, setProfile] = useState(null);
+  const { currentUser } = useContext(AuthContext);
+  const email = currentUser?.email;
   const axiosPublic = useAxiosPublic();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const response = await axiosPublic.get(`/participants/profile`);
-      setProfile(response.data);
-    };
-    fetchProfile();
-  }, [axiosPublic]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const handleProfileUpdate = (event) => {
-    event.preventDefault();
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["userProfile", email],
+    queryFn: async () => {
+      const response = await axiosPublic.get(`/user?email=${email}`);
+      return response.data;
+    },
+    enabled: !!email,
+  });
+
+  const handleEditProfile = () => {
+    setIsEditModalOpen(true);
   };
 
-  if (!profile) return <p>Loading profile...</p>;
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const handleProfileUpdated = () => {
+    refetch();
+  };
+
+  if (isLoading) return <p>Loading profile...</p>;
+  if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
     <div>
-      <h3 className="text-2xl font-bold mb-6">Edit Profile</h3>
-      <form onSubmit={handleProfileUpdate} className="space-y-4">
+      <h3 className="text-2xl font-bold mb-6">Profile</h3>
+      <div className="space-y-4">
         <div>
           <label className="block text-sm">Name</label>
           <input
             type="text"
-            value={profile.name}
-            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+            value={data?.name}
+            readOnly
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
@@ -36,24 +52,64 @@ const UserProfile = () => {
           <label className="block text-sm">Email</label>
           <input
             type="email"
-            value={profile.email}
-            onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+            value={data?.email}
+            readOnly
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
         <div>
-          <label className="block text-sm">Profile Image URL</label>
+          <label className="block text-sm">Age</label>
           <input
-            type="text"
-            value={profile.image}
-            onChange={(e) => setProfile({ ...profile, image: e.target.value })}
+            type="number"
+            value={data?.age || "Unavailable"}
+            readOnly
             className="w-full p-2 border border-gray-300 rounded"
           />
         </div>
-        <button className="bg-primary text-white px-6 py-2 rounded-lg">
-          Update
+        <div>
+          <label className="block text-sm">Phone Number</label>
+          <input
+            type="text"
+            value={data?.phoneNumber || "Unavailable"}
+            readOnly
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label className="block text-sm">Gender</label>
+          <input
+            type="text"
+            value={data?.gender || "Unavailable"}
+            readOnly
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label className="block text-sm">Emergency Contact</label>
+          <input
+            type="text"
+            value={data?.emergencyContact || "Unavailable"}
+            readOnly
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+
+        <button
+          onClick={handleEditProfile}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg"
+        >
+          Edit Profile
         </button>
-      </form>
+      </div>
+
+      {isEditModalOpen && (
+        <EditUserProfileModal
+          currentUser={currentUser}
+          data={data}
+          onClose={handleCloseEditModal}
+          onProfileUpdated={handleProfileUpdated}
+        />
+      )}
     </div>
   );
 };
