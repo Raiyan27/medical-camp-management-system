@@ -4,8 +4,8 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import { ToastContainer } from "react-toastify";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import Navbar from "./components/Navbar";
 import Root from "./pages/Root";
 import Home from "./pages/Home";
 import { JoinUs } from "./pages/JoinUs";
@@ -17,6 +17,8 @@ import OrganizerProfile from "./components/OrganizerDashboard/OrganizerProfile";
 import AddCamp from "./components/OrganizerDashboard/AddCamp";
 import ManageUsers from "./components/OrganizerDashboard/ManageUsers";
 import ManageCamps from "./components/OrganizerDashboard/ManageCamps";
+
+const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: "/",
@@ -68,11 +70,13 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-      <ToastContainer position="top-center" />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ThemeProvider>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+        <ToastContainer position="top-center" />
+      </AuthProvider>
+    </QueryClientProvider>{" "}
   </StrictMode>
 );

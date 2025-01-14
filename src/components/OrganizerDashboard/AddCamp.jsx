@@ -1,15 +1,41 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { toast } from "react-toastify";
 
 const AddCamp = () => {
+  const axiosSecure = useAxiosSecure();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Camp added:", data);
+  const onSubmit = async (data) => {
+    try {
+      const campData = {
+        campName: data.campName,
+        image: data.image,
+        fees: data.fees,
+        dateTime: data.dateTime,
+        location: data.location,
+        professionalName: data.professionalName,
+        participantCount: data.participantCount,
+        description: data.description,
+      };
+
+      const response = await axiosSecure.post("/camps", campData);
+
+      if (response.status === 200) {
+        toast("Camp added successfully!");
+      } else {
+        toast(`Error: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error("Error saving camp:", error);
+      toast("There was an error adding the camp.");
+    }
   };
 
   return (
