@@ -98,6 +98,18 @@ const Navbar = () => {
                   <p className="block px-4 py-2 text-sm font-bold">
                     {currentUser.displayName} {admin ? "(Admin)" : ""}
                   </p>
+                  <Link
+                    to="/"
+                    className="md:hidden block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/available-camps"
+                    className="md:hidden block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Available Camps
+                  </Link>
                   {admin ? (
                     <Link
                       to="/user-dashboard/profile"

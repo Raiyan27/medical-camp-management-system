@@ -31,7 +31,8 @@ const RegisteredCamps = () => {
   const [filteredCamps, setFilteredCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [paymentData, setPaymentData] = useState({});
 
@@ -88,7 +89,7 @@ const RegisteredCamps = () => {
   const handleFeedback = (campId) => {
     const camp = filteredCamps.find((camp) => camp._id === campId);
     setSelectedCamp(camp);
-    setModalOpen(true);
+    setFeedbackModalOpen(true); // Open Feedback Modal
   };
 
   const indexOfLastCamp = currentPage * campsPerPage;
@@ -119,6 +120,7 @@ const RegisteredCamps = () => {
       return camp;
     });
     setFilteredCamps(updatedCamps);
+    setFeedbackModalOpen(false);
   };
 
   const handlePayment = (camp) => {
@@ -127,7 +129,7 @@ const RegisteredCamps = () => {
       amount: camp.fees,
       email: currentUser.email,
     });
-    setModalOpen(true);
+    setPaymentModalOpen(true);
   };
 
   const handlePaymentSuccess = (regId) => {
@@ -138,7 +140,7 @@ const RegisteredCamps = () => {
       return camp;
     });
     setFilteredCamps(updatedCamps);
-    setModalOpen(false);
+    setPaymentModalOpen(false);
   };
 
   if (status === "loading") return <p>Loading camps...</p>;
@@ -198,7 +200,7 @@ const RegisteredCamps = () => {
                       <>
                         <button
                           onClick={() => handlePayment(camp)}
-                          className="text-white bg-primary px-4 py-2 rounded-lg"
+                          className="text-white bg-primary hover:bg-accent px-4 py-2 rounded-lg"
                         >
                           Pay
                         </button>
@@ -210,7 +212,7 @@ const RegisteredCamps = () => {
                               camp.confirmationStatus
                             )
                           }
-                          className="text-white bg-red-500 px-4 py-2 rounded-lg ml-2"
+                          className="text-white bg-red-500 hover:bg-red-700 px-4 py-2 rounded-lg ml-2"
                         >
                           Cancel
                         </button>
@@ -232,7 +234,7 @@ const RegisteredCamps = () => {
                       !camp.feedback ? (
                         <button
                           onClick={() => handleFeedback(camp._id)}
-                          className="text-white bg-blue-500 px-4 py-2 rounded-lg"
+                          className="text-white bg-primary hover:bg-accent px-4 py-2 rounded-lg"
                         >
                           Feedback
                         </button>
@@ -294,15 +296,15 @@ const RegisteredCamps = () => {
 
       {selectedCamp && (
         <FeedbackDialog
-          open={modalOpen}
-          handleClose={() => setModalOpen(false)}
+          open={feedbackModalOpen}
+          handleClose={() => setFeedbackModalOpen(false)}
           camp={selectedCamp}
           onFeedbackSubmit={handleFeedbackSubmit}
         />
       )}
       <PaymentModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
         camp={paymentData.camp}
         amount={paymentData.amount}
         email={paymentData.email}

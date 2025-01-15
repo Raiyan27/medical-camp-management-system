@@ -143,7 +143,9 @@ const ManageCamps = () => {
             {currentCamps.map((camp) => (
               <tr key={camp._id} className="border-b">
                 <td className="p-3">{camp.campName}</td>
-                <td className="p-3">{camp.dateTime.slice(0, 10)}</td>
+                <td className="p-3">
+                  {new Date(camp.dateTime).toLocaleString()}
+                </td>
                 <td className="p-3">{camp.location}</td>
                 <td className="p-3">{camp.professionalName}</td>
                 <td className="p-3">{camp.participantCount}</td>

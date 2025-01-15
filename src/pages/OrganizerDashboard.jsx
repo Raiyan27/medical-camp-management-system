@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 const OrganizerDashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,24 +12,52 @@ const OrganizerDashboard = () => {
         <h2 className="text-2xl font-bold text-center mb-8">Dashboard Menu</h2>
         <ul className="space-y-4">
           <li>
-            <Link to="profile" className="text-white hover:text-primary">
+            <NavLink
+              to="profile"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-primary font-bold"
+                  : "text-white hover:text-primary"
+              }
+            >
               Organizer Profile
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="add-camp" className="text-white hover:text-primary">
+            <NavLink
+              to="add-camp"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-primary font-bold"
+                  : "text-white hover:text-primary"
+              }
+            >
               Add A Camp
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="manage-camps" className="text-white hover:text-primary">
+            <NavLink
+              to="manage-camps"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-primary font-bold"
+                  : "text-white hover:text-primary"
+              }
+            >
               Manage Camps
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="manage-users" className="text-white hover:text-primary">
+            <NavLink
+              to="manage-users"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-primary font-bold"
+                  : "text-white hover:text-primary"
+              }
+            >
               Manage Users
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>
@@ -58,24 +86,52 @@ const OrganizerDashboard = () => {
         {isMenuOpen && (
           <ul className="mt-4 space-y-4">
             <li>
-              <Link to="profile" className="text-white hover:text-primary">
+              <NavLink
+                to="profile"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-primary font-bold"
+                    : "text-white hover:text-primary"
+                }
+              >
                 Organizer Profile
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="add-camp" className="text-white hover:text-primary">
+              <NavLink
+                to="add-camp"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-primary font-bold"
+                    : "text-white hover:text-primary"
+                }
+              >
                 Add A Camp
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="manage-camps" className="text-white hover:text-primary">
+              <NavLink
+                to="manage-camps"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-primary font-bold"
+                    : "text-white hover:text-primary"
+                }
+              >
                 Manage Camps
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link to="manage-users" className="text-white hover:text-primary">
+              <NavLink
+                to="manage-users"
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-primary font-bold"
+                    : "text-white hover:text-primary"
+                }
+              >
                 Manage Users
-              </Link>
+              </NavLink>
             </li>
           </ul>
         )}

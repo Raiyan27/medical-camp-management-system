@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, NavLink } from "react-router-dom";
 
 const UserDashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,27 +12,41 @@ const UserDashboard = () => {
         <h2 className="text-2xl font-bold mb-6">Participant Dashboard</h2>
         <ul>
           <li>
-            <Link to="analytics" className="block mb-4 hover:text-accent">
-              Analytics
-            </Link>
-          </li>
-          <li>
-            <Link to="profile" className="block mb-4 hover:text-accent">
+            <NavLink
+              to="profile"
+              className="block mb-4 hover:text-accent"
+              activeClassName="text-accent font-bold"
+            >
               Profile
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link
+            <NavLink
+              to="analytics"
+              className="block mb-4 hover:text-accent"
+              activeClassName="text-accent font-bold"
+            >
+              Analytics
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
               to="registered-camps"
               className="block mb-4 hover:text-accent"
+              activeClassName="text-accent font-bold"
             >
               Registered Camps
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="payment-history" className="block mb-4 hover:text-accent">
+            <NavLink
+              to="payment-history"
+              className="block mb-4 hover:text-accent"
+              activeClassName="text-accent font-bold"
+            >
               Payment History
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>
@@ -61,33 +75,41 @@ const UserDashboard = () => {
         {isMenuOpen && (
           <ul className="mt-4 space-y-4">
             <li>
-              <Link
+              <NavLink
+                to="profile"
+                className="block text-white hover:text-accent"
+                activeClassName="text-accent font-bold"
+              >
+                Profile
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
                 to="analytics"
                 className="block text-white hover:text-accent"
+                activeClassName="text-accent font-bold"
               >
                 Analytics
-              </Link>
+              </NavLink>
             </li>
+
             <li>
-              <Link to="profile" className="block text-white hover:text-accent">
-                Profile
-              </Link>
-            </li>
-            <li>
-              <Link
+              <NavLink
                 to="registered-camps"
                 className="block text-white hover:text-accent"
+                activeClassName="text-accent font-bold"
               >
                 Registered Camps
-              </Link>
+              </NavLink>
             </li>
             <li>
-              <Link
+              <NavLink
                 to="payment-history"
                 className="block text-white hover:text-accent"
+                activeClassName="text-accent font-bold"
               >
                 Payment History
-              </Link>
+              </NavLink>
             </li>
           </ul>
         )}

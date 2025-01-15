@@ -48,7 +48,7 @@ const PaymentModal = ({
         token: paymentMethod,
         campId: camp.campId,
         amount,
-        paidBy: email,
+        paidBy: camp.userName,
         campName: camp.campName,
         email,
         regId: camp._id,
