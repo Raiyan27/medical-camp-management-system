@@ -116,6 +116,7 @@ const EditUserProfileModal = ({
               value={formData.name}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded"
+              readOnly
             />
             {errors.name && (
               <p className="text-red-500 text-xs">{errors.name}</p>

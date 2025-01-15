@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import Search from "../Search";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { Link } from "react-router-dom";
 
 const fetchRegistrations = async (axiosPublic) => {
   const response = await axiosPublic.get("/get-all-registrations");
@@ -11,7 +14,8 @@ const fetchRegistrations = async (axiosPublic) => {
 
 const ManageUsers = () => {
   const axiosPublic = useAxiosPublic();
-  const { data, status, error } = useQuery({
+  const axiosSecure = useAxiosSecure();
+  const { data, status, error, refetch } = useQuery({
     queryKey: ["registrations"],
     queryFn: () => fetchRegistrations(axiosPublic),
   });
@@ -20,10 +24,16 @@ const ManageUsers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [registrationsPerPage] = useState(10);
 
+  useEffect(() => {
+    if (data) {
+      setFilteredRegistrations(data);
+    }
+  }, [data]);
+
   const handleSearch = (searchTerm) => {
     const filteredData = data.filter(
       (reg) =>
-        reg.participantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.paymentStatus.toLowerCase().includes(searchTerm.toLowerCase()) ||
         reg.confirmationStatus.toLowerCase().includes(searchTerm.toLowerCase())
@@ -32,18 +42,78 @@ const ManageUsers = () => {
     setCurrentPage(1);
   };
 
-  const handleConfirm = (id) => {
-    const updatedRegistrations = data.map((reg) =>
-      reg.id === id ? { ...reg, confirmationStatus: "Confirmed" } : reg
-    );
-    setFilteredRegistrations(updatedRegistrations);
+  const handleApprove = (reg) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to approve registration for ${reg.userName} to ${reg.campName}. Do you want to proceed?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Approve",
+      cancelButtonText: "No, Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure
+          .put(`/update-registration/${reg._id}`, {
+            confirmationStatus: "confirmed",
+          })
+          .then(() => {
+            Swal.fire({
+              title: "Approved!",
+              text: `The registration for ${reg.userName} has been successfully approved.`,
+              icon: "success",
+            });
+            const updatedRegistrations = filteredRegistrations.map(
+              (registration) =>
+                registration._id === reg._id
+                  ? { ...registration, confirmationStatus: "confirmed" }
+                  : registration
+            );
+            setFilteredRegistrations(updatedRegistrations);
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: "Error",
+              text: "There was an error updating the registration.",
+              icon: "error",
+            });
+          });
+      }
+    });
   };
 
   const handleCancel = (id) => {
-    if (window.confirm("Are you sure you want to cancel this registration?")) {
-      const updatedRegistrations = data.filter((reg) => reg.id !== id);
-      setFilteredRegistrations(updatedRegistrations);
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to cancel this registration?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Cancel",
+      cancelButtonText: "No, Keep Registration",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure
+          .delete(`/cancel-registration/${id}`)
+          .then(() => {
+            Swal.fire({
+              title: "Cancelled",
+              text: "The registration has been successfully cancelled.",
+              icon: "success",
+            });
+            const updatedRegistrations = filteredRegistrations.filter(
+              (reg) => reg._id !== id
+            );
+            setFilteredRegistrations(updatedRegistrations);
+            setCurrentPage(1);
+          })
+          .catch(() => {
+            Swal.fire({
+              title: "Error",
+              text: "There was an error cancelling the registration.",
+              icon: "error",
+            });
+          });
+      }
+    });
   };
 
   const indexOfLastRegistration = currentPage * registrationsPerPage;
@@ -64,10 +134,6 @@ const ManageUsers = () => {
 
   if (status === "loading") {
     return <p>Loading registrations...</p>;
-  }
-
-  if (status === "error") {
-    return <p>Error fetching registrations: {error.message}</p>;
   }
 
   if (data && filteredRegistrations.length === 0) {
@@ -101,7 +167,7 @@ const ManageUsers = () => {
                 <td className="p-3">
                   <span
                     className={`${
-                      reg.paymentStatus === "Paid"
+                      reg.paymentStatus === "paid"
                         ? "text-green-500"
                         : "text-red-500"
                     } font-semibold`}
@@ -110,33 +176,50 @@ const ManageUsers = () => {
                   </span>
                 </td>
                 <td className="p-3">
-                  <button
-                    onClick={() => handleConfirm(reg.id)}
+                  <p
                     className={`${
-                      reg.confirmationStatus === "Confirmed"
+                      reg.confirmationStatus === "confirmed"
                         ? "text-green-500 cursor-not-allowed"
                         : "text-blue-500"
-                    }`}
-                    disabled={reg.confirmationStatus === "Confirmed"}
+                    } font-semibold`}
                   >
                     {reg.confirmationStatus}
-                  </button>
+                  </p>
                 </td>
-                <td className="p-3">
+
+                <td className="p-3 flex items-center">
                   <button
-                    onClick={() => handleCancel(reg.id)}
-                    className={`${
-                      reg.paymentStatus === "Paid" &&
-                      reg.confirmationStatus === "Confirmed"
+                    onClick={() => handleApprove(reg)}
+                    className={`mr-4 ${
+                      reg.paymentStatus === "paid" &&
+                      reg.confirmationStatus === "pending"
+                        ? "text-primary hover:text-accent cursor-pointer"
+                        : reg.confirmationStatus === "confirmed"
                         ? "text-gray-500 cursor-not-allowed"
-                        : "text-red-500"
+                        : "text-gray-500 cursor-not-allowed"
                     }`}
                     disabled={
-                      reg.paymentStatus === "Paid" &&
-                      reg.confirmationStatus === "Confirmed"
+                      reg.paymentStatus !== "paid" ||
+                      reg.confirmationStatus !== "pending"
                     }
                   >
-                    Cancel
+                    Approve
+                  </button>
+                  |
+                  <button
+                    onClick={() => handleCancel(reg._id)}
+                    className={`p-3 ${
+                      reg.paymentStatus === "paid" ||
+                      reg.confirmationStatus === "confirmed"
+                        ? "text-gray-500 cursor-not-allowed"
+                        : "text-red-500 cursor-pointer"
+                    }`}
+                    disabled={
+                      reg.paymentStatus === "paid" ||
+                      reg.confirmationStatus === "confirmed"
+                    }
+                  >
+                    Delete
                   </button>
                 </td>
               </tr>

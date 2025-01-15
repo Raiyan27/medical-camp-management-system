@@ -6,6 +6,8 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useContext } from "react";
 import { AuthContext } from "../../Auth/AuthContext";
 import Search from "../Search";
+import { MdDoneOutline } from "react-icons/md";
+import { FeedbackDialog } from "./FeedbackDialogue";
 
 const fetchRegisteredCamps = async (userEmail, axiosSecure) => {
   const response = await axiosSecure.get(
@@ -29,6 +31,8 @@ const RegisteredCamps = () => {
   const [filteredCamps, setFilteredCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
+  const [modalOpen, setModalOpen] = useState(false); // state to control modal visibility
+  const [selectedCamp, setSelectedCamp] = useState(null); // store selected camp for feedback
 
   useEffect(() => {
     if (data) {
@@ -40,7 +44,17 @@ const RegisteredCamps = () => {
     navigate(`/payment/${campId}`);
   };
 
-  const handleCancel = (campId) => {
+  const handleCancel = (campId, paymentStatus, confirmationStatus) => {
+    if (paymentStatus !== "pending" || confirmationStatus !== "pending") {
+      Swal.fire({
+        title: "Cannot Cancel",
+        text: "You cannot cancel this registration as the payment or confirmation status is not 'pending'.",
+        icon: "error",
+        confirmButtonText: "Okay",
+      });
+      return;
+    }
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you want to cancel your registration for this camp?",
@@ -58,6 +72,10 @@ const RegisteredCamps = () => {
               text: "Your registration has been cancelled.",
               icon: "success",
             });
+            const updatedCamps = filteredCamps.filter(
+              (camp) => camp._id !== campId
+            );
+            setFilteredCamps(updatedCamps);
           })
           .catch(() => {
             Swal.fire({
@@ -71,7 +89,9 @@ const RegisteredCamps = () => {
   };
 
   const handleFeedback = (campId) => {
-    navigate(`/feedback/${campId}`);
+    const camp = filteredCamps.find((camp) => camp._id === campId);
+    setSelectedCamp(camp);
+    setModalOpen(true);
   };
 
   const indexOfLastCamp = currentPage * campsPerPage;
@@ -92,6 +112,16 @@ const RegisteredCamps = () => {
     );
     setFilteredCamps(filteredData);
     setCurrentPage(1);
+  };
+
+  const handleFeedbackSubmit = (campId, rating, review) => {
+    const updatedCamps = filteredCamps.map((camp) => {
+      if (camp._id === campId) {
+        return { ...camp, feedback: true, rating, review };
+      }
+      return camp;
+    });
+    setFilteredCamps(updatedCamps);
   };
 
   if (status === "loading") return <p>Loading camps...</p>;
@@ -124,17 +154,52 @@ const RegisteredCamps = () => {
                   <td className="p-3">{camp.campName}</td>
                   <td className="p-3">${camp.fees}</td>
                   <td className="p-3">{camp.userName}</td>
-                  <td className="p-3">{camp.paymentStatus}</td>
-                  <td className="p-3">{camp.confirmationStatus}</td>
+                  <td className="p-3">
+                    <span
+                      className={`${
+                        camp.paymentStatus === "paid"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      } font-semibold`}
+                    >
+                      {camp.paymentStatus}
+                    </span>
+                  </td>
+                  <td className="p-3">
+                    <p
+                      className={`${
+                        camp.confirmationStatus === "confirmed"
+                          ? "text-green-500 cursor-not-allowed"
+                          : "text-blue-500"
+                      } font-semibold`}
+                    >
+                      {camp.confirmationStatus}
+                    </p>
+                  </td>
                   <td className="p-3 flex items-center">
-                    {camp.paymentStatus === "unpaid" && (
-                      <button
-                        onClick={() => handlePayment(camp._id)}
-                        className="text-white bg-primary px-4 py-2 rounded-lg"
-                      >
-                        Pay
-                      </button>
+                    {camp.paymentStatus === "pending" && (
+                      <>
+                        <button
+                          onClick={() => handlePayment(camp._id)}
+                          className="text-white bg-primary px-4 py-2 rounded-lg"
+                        >
+                          Pay
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleCancel(
+                              camp._id,
+                              camp.paymentStatus,
+                              camp.confirmationStatus
+                            )
+                          }
+                          className="text-white bg-red-500 px-4 py-2 rounded-lg ml-2"
+                        >
+                          Cancel
+                        </button>
+                      </>
                     )}
+
                     {camp.paymentStatus === "paid" && (
                       <button
                         className="text-white bg-green-500 px-4 py-2 rounded-lg"
@@ -143,25 +208,33 @@ const RegisteredCamps = () => {
                         Paid
                       </button>
                     )}
-
-                    {camp.paymentStatus === "unpaid" && (
-                      <button
-                        onClick={() => handleCancel(camp._id)}
-                        className="text-white bg-red-500 px-4 py-2 rounded-lg ml-2"
-                      >
-                        Cancel
-                      </button>
-                    )}
-
+                  </td>
+                  <td className="p-3">
                     {camp.paymentStatus === "paid" &&
-                      camp.confirmationStatus === "confirmed" && (
+                    camp.confirmationStatus === "confirmed" ? (
+                      !camp.feedback ? (
                         <button
                           onClick={() => handleFeedback(camp._id)}
-                          className="text-white bg-blue-500 px-4 py-2 rounded-lg ml-2"
+                          className="text-white bg-blue-500 px-4 py-2 rounded-lg"
                         >
                           Feedback
                         </button>
-                      )}
+                      ) : (
+                        <button
+                          disabled
+                          className="text-white bg-green-500 px-4 py-2 rounded-lg flex items-center"
+                        >
+                          Done <MdDoneOutline className="ml-2" />
+                        </button>
+                      )
+                    ) : (
+                      <button
+                        disabled
+                        className="text-white bg-gray-500 px-4 py-2 rounded-lg"
+                      >
+                        Unavailable
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -201,6 +274,15 @@ const RegisteredCamps = () => {
           Next
         </button>
       </div>
+
+      {selectedCamp && (
+        <FeedbackDialog
+          open={modalOpen}
+          handleClose={() => setModalOpen(false)}
+          camp={selectedCamp}
+          onFeedbackSubmit={handleFeedbackSubmit}
+        />
+      )}
     </div>
   );
 };
