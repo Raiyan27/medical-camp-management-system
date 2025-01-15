@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -80,6 +80,7 @@ export function Register() {
       const userInfo = {
         name: name,
         email: email,
+        admin: false,
       };
       axiosPublic.post("/user", userInfo).then((res) => {
         if (res.data.insertedId) {
@@ -90,7 +91,14 @@ export function Register() {
       });
     } catch (error) {
       console.error(error);
-      toast.error("Registration failed. Please try again.");
+
+      if (error.code === "auth/email-already-in-use") {
+        toast.error(
+          "This email is already in use. Please try a different one."
+        );
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -106,6 +114,7 @@ export function Register() {
       const userInfo = {
         name: result.user?.displayName,
         email: result.user?.email,
+        admin: false,
       };
       axiosPublic.post("/user", userInfo).then((res) => {
         toast.success("Successfully logged in!");

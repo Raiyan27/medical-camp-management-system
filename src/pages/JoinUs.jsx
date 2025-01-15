@@ -61,6 +61,7 @@ export function JoinUs() {
       const userInfo = {
         name: result.user?.displayName,
         email: result.user?.email,
+        admin: false,
       };
       axiosPublic.post("/user", userInfo).then((res) => {
         toast.success(`Welcome, ${user.displayName}!`);

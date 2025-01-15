@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { toast } from "react-toastify";
 import { useDropzone } from "react-dropzone";
+import { AuthContext } from "../../Auth/AuthContext";
 
 const AddCamp = () => {
   const axiosSecure = useAxiosSecure();
@@ -12,6 +13,8 @@ const AddCamp = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const { currentUser } = useContext(AuthContext);
+  const email = currentUser.email;
 
   const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_IMAGE_API_KEY;
 
@@ -60,6 +63,7 @@ const AddCamp = () => {
         professionalName: data.professionalName,
         participantCount: data.participantCount,
         description: data.description,
+        createdBy: email,
       };
 
       const response = await axiosSecure.post("/camps", campData);

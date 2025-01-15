@@ -1,15 +1,46 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Auth/AuthContext";
 import { getAuth, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import useFetchUser from "../hooks/useFetchUser";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
-  const location = useLocation();
+  const [email, setEmail] = useState(null);
+  const [userData, setUserData] = useState("guest");
+  const [admin, setAdmin] = useState(false);
   const auth = getAuth();
+  const location = useLocation();
+  const axiosPublic = useAxiosPublic();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (currentUser?.email) {
+        try {
+          const response = await axiosPublic.get("/user", {
+            params: { email: currentUser.email },
+          });
+          setUserData(response.data);
+          setAdmin(response.data.admin);
+          setEmail(currentUser.email);
+        } catch (error) {
+          console.error("Error fetching user:", error);
+          toast("Failed to fetch user details");
+        }
+      } else {
+        setUserData("guest");
+        setAdmin(false);
+        setEmail(null);
+      }
+    };
+
+    fetchUser();
+  }, [currentUser?.email]);
 
   const handleLogout = async () => {
     try {
@@ -84,17 +115,36 @@ const Navbar = () => {
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
                 <p className="block px-4 py-2 text-sm font-bold">
-                  {currentUser.name}
+                  {currentUser.displayName} {admin ? "(Admin)" : ""}
                 </p>
-                <Link
-                  to="/dashboard"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Dashboard
-                </Link>
+                {admin ? (
+                  <Link
+                    to="/user-dashboard"
+                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                ) : (
+                  ""
+                )}
+                {admin ? (
+                  <Link
+                    to="/organizer-dashboard"
+                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Organizer Dashboard
+                  </Link>
+                ) : (
+                  <Link
+                    to="/user-dashboard"
+                    className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  className="block w-full text-red-400 text-left px-4 py-2 text-sm hover:bg-gray-100"
                 >
                   Logout
                 </button>

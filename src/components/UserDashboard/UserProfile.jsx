@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "../../Auth/AuthContext";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
@@ -44,7 +44,7 @@ const UserProfile = () => {
   return (
     <div>
       <h3 className="text-2xl font-bold mb-6">Profile</h3>
-      <div className="space-y-4">
+      <div className="space-y-4 p-4 border rounded-xl">
         <div>
           <label className="block text-sm">Name</label>
           <input
