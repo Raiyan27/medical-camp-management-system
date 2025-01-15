@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import Search from "../Search";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import EditCampModal from "./EditCampModal";
 
 const fetchCamps = async (axiosPublic) => {
   const response = await axiosPublic.get("/camps");
@@ -12,59 +14,106 @@ const fetchCamps = async (axiosPublic) => {
 
 const ManageCamps = () => {
   const axiosPublic = useAxiosPublic();
-  const { data, status, error } = useQuery({
+  const axiosSecure = useAxiosSecure();
+  const { data, status, error, refetch } = useQuery({
     queryKey: ["camps"],
     queryFn: () => fetchCamps(axiosPublic),
+    refetchOnWindowFocus: true,
   });
 
-  const [filteredCamps, setFilteredCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
+  const [filteredCamps, setFilteredCamps] = useState([]);
+  const [selectedCamp, setSelectedCamp] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSearch = (searchTerm) => {
-    const filteredData = data.filter(
-      (camp) =>
-        camp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        camp.date.includes(searchTerm) ||
-        camp.professional.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCamps(filteredData);
-    setCurrentPage(1);
+    if (data) {
+      const filteredData = data.filter(
+        (camp) =>
+          camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          camp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          camp.professionalName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredCamps(filteredData);
+      setCurrentPage(1);
+    }
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this camp?")) {
-      axiosPublic
-        .delete(`/camps/${id}`)
-        .then(() => {
-          Swal.fire({
-            title: "Deleted!",
-            text: "The camp has been deleted.",
-            icon: "success",
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this camp?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axiosSecure
+          .delete(`/delete-camp/${id}`)
+          .then(() => {
+            setFilteredCamps((prevCamps) =>
+              prevCamps.filter((camp) => camp._id !== id)
+            );
+
+            if (data) {
+              setFilteredCamps((prevData) =>
+                prevData.filter((camp) => camp._id !== id)
+              );
+            }
+            Swal.fire({
+              title: "Deleted!",
+              text: "The camp has been deleted.",
+              icon: "success",
+            });
+            setCurrentPage(1);
+          })
+          .catch((err) => {
+            console.error("Error deleting camp", err);
+            Swal.fire({
+              title: "Error!",
+              text: "There was an error deleting the camp.",
+              icon: "error",
+            });
           });
-          const updatedCamps = filteredCamps.filter((camp) => camp.id !== id);
-          setFilteredCamps(updatedCamps);
-        })
-        .catch((err) => {
-          console.error("Error deleting camp", err);
-          Swal.fire({
-            title: "Error!",
-            text: "There was an error deleting the camp.",
-            icon: "error",
-          });
+      } else {
+        Swal.fire({
+          title: "Cancelled",
+          text: "The camp has not been deleted.",
+          icon: "info",
         });
-    }
+      }
+    });
   };
 
   const indexOfLastCamp = currentPage * campsPerPage;
   const indexOfFirstCamp = indexOfLastCamp - campsPerPage;
-  const currentCamps = filteredCamps.slice(indexOfFirstCamp, indexOfLastCamp);
+
+  const currentCamps =
+    (filteredCamps.length ? filteredCamps : data)?.slice(
+      indexOfFirstCamp,
+      indexOfLastCamp
+    ) || [];
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const totalPages = Math.ceil(filteredCamps.length / campsPerPage);
+  const totalPages = Math.ceil(
+    (filteredCamps.length || data?.length || 0) / campsPerPage
+  );
+  const handleEdit = (camp) => {
+    setSelectedCamp(camp);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (!filteredCamps.length && data) {
+      setFilteredCamps(data);
+    }
+  }, [data, filteredCamps.length]);
+
   if (status === "loading") {
     return <p>Loading camps...</p>;
   }
@@ -72,15 +121,11 @@ const ManageCamps = () => {
     return <p>Error fetching camps: {error.message}</p>;
   }
 
-  if (data && filteredCamps.length === 0) {
-    setFilteredCamps(data);
-  }
-
   return (
     <div className="border p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold mb-4">Manage Camps</h2>
 
-      <Search onSearch={handleSearch} />
+      <Search onSearch={handleSearch} title="camp" />
 
       <div className="overflow-x-auto">
         <table className="w-full table-auto border-collapse">
@@ -96,7 +141,7 @@ const ManageCamps = () => {
           </thead>
           <tbody>
             {currentCamps.map((camp) => (
-              <tr key={camp.id} className="border-b">
+              <tr key={camp._id} className="border-b">
                 <td className="p-3">{camp.campName}</td>
                 <td className="p-3">{camp.dateTime.slice(0, 10)}</td>
                 <td className="p-3">{camp.location}</td>
@@ -104,14 +149,14 @@ const ManageCamps = () => {
                 <td className="p-3">{camp.participantCount}</td>
                 <td className="p-3 flex items-center">
                   <Link
-                    to={`/update-camp/${camp.id}`}
+                    onClick={() => handleEdit(camp)}
                     className="text-primary hover:text-accent mr-4"
                   >
                     Edit
                   </Link>
                   |
                   <button
-                    onClick={() => handleDelete(camp.id)}
+                    onClick={() => handleDelete(camp._id)}
                     className="text-red-500 hover:text-red-700 ml-4"
                   >
                     Delete
@@ -155,6 +200,14 @@ const ManageCamps = () => {
           Next
         </button>
       </div>
+      {isModalOpen && (
+        <EditCampModal
+          camp={selectedCamp}
+          onClose={() => setIsModalOpen(false)}
+          refetch={refetch}
+          setFilteredCamps={setFilteredCamps}
+        />
+      )}
     </div>
   );
 };

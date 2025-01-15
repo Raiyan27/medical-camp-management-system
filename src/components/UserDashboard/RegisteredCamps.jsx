@@ -95,75 +95,80 @@ const RegisteredCamps = () => {
   };
 
   if (status === "loading") return <p>Loading camps...</p>;
-  if (status === "error") return <p>An error occurred</p>;
 
   return (
     <div className="border p-6 rounded-lg shadow-lg ">
       <h3 className="text-2xl font-semibold mb-4">Registered Camps</h3>
       <Search onSearch={handleSearch} />
-      <div className="overflow-x-auto">
-        <table className="min-w-full overflow">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="p-3 text-left">Camp Name</th>
-              <th className="p-3 text-left">Fees</th>
-              <th className="p-3 text-left">Participant Name</th>
-              <th className="p-3 text-left">Payment Status</th>
-              <th className="p-3 text-left">Confirmation Status</th>
-              <th className="p-3 text-left">Actions</th>
-              <th className="p-3 text-left">Feedback</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentCamps.map((camp) => (
-              <tr key={camp._id} className="border-b">
-                <td className="p-3">{camp.campName}</td>
-                <td className="p-3">${camp.fees}</td>
-                <td className="p-3">{camp.userName}</td>
-                <td className="p-3">{camp.paymentStatus}</td>
-                <td className="p-3">{camp.confirmationStatus}</td>
-                <td className="p-3 flex items-center">
-                  {camp.paymentStatus === "unpaid" && (
-                    <button
-                      onClick={() => handlePayment(camp._id)}
-                      className="text-white bg-primary px-4 py-2 rounded-lg"
-                    >
-                      Pay
-                    </button>
-                  )}
-                  {camp.paymentStatus === "paid" && (
-                    <button
-                      className="text-white bg-green-500 px-4 py-2 rounded-lg"
-                      disabled
-                    >
-                      Paid
-                    </button>
-                  )}
-
-                  {camp.paymentStatus === "unpaid" && (
-                    <button
-                      onClick={() => handleCancel(camp._id)}
-                      className="text-white bg-red-500 px-4 py-2 rounded-lg ml-2"
-                    >
-                      Cancel
-                    </button>
-                  )}
-
-                  {camp.paymentStatus === "paid" &&
-                    camp.confirmationStatus === "confirmed" && (
+      {filteredCamps.length === 0 ? (
+        <p className="text-center text-xl text-gray-600 mt-6">
+          You are not registered to any camps.
+        </p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full overflow">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-3 text-left">Camp Name</th>
+                <th className="p-3 text-left">Fees</th>
+                <th className="p-3 text-left">Participant Name</th>
+                <th className="p-3 text-left">Payment Status</th>
+                <th className="p-3 text-left">Confirmation Status</th>
+                <th className="p-3 text-left">Actions</th>
+                <th className="p-3 text-left">Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentCamps.map((camp) => (
+                <tr key={camp._id} className="border-b">
+                  <td className="p-3">{camp.campName}</td>
+                  <td className="p-3">${camp.fees}</td>
+                  <td className="p-3">{camp.userName}</td>
+                  <td className="p-3">{camp.paymentStatus}</td>
+                  <td className="p-3">{camp.confirmationStatus}</td>
+                  <td className="p-3 flex items-center">
+                    {camp.paymentStatus === "unpaid" && (
                       <button
-                        onClick={() => handleFeedback(camp._id)}
-                        className="text-white bg-blue-500 px-4 py-2 rounded-lg ml-2"
+                        onClick={() => handlePayment(camp._id)}
+                        className="text-white bg-primary px-4 py-2 rounded-lg"
                       >
-                        Feedback
+                        Pay
                       </button>
                     )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    {camp.paymentStatus === "paid" && (
+                      <button
+                        className="text-white bg-green-500 px-4 py-2 rounded-lg"
+                        disabled
+                      >
+                        Paid
+                      </button>
+                    )}
+
+                    {camp.paymentStatus === "unpaid" && (
+                      <button
+                        onClick={() => handleCancel(camp._id)}
+                        className="text-white bg-red-500 px-4 py-2 rounded-lg ml-2"
+                      >
+                        Cancel
+                      </button>
+                    )}
+
+                    {camp.paymentStatus === "paid" &&
+                      camp.confirmationStatus === "confirmed" && (
+                        <button
+                          onClick={() => handleFeedback(camp._id)}
+                          className="text-white bg-blue-500 px-4 py-2 rounded-lg ml-2"
+                        >
+                          Feedback
+                        </button>
+                      )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <div className="mt-4 flex justify-between items-center">
         <button
           onClick={() => handlePageChange(currentPage - 1)}

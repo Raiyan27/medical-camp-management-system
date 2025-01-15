@@ -4,6 +4,7 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { toast } from "react-toastify";
 import { useDropzone } from "react-dropzone";
 import { AuthContext } from "../../Auth/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AddCamp = () => {
   const axiosSecure = useAxiosSecure();
@@ -12,7 +13,9 @@ const AddCamp = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
+  const queryClient = useQueryClient();
   const { currentUser } = useContext(AuthContext);
   const email = currentUser.email;
 
@@ -70,6 +73,9 @@ const AddCamp = () => {
 
       if (response.status === 200) {
         toast("Camp added successfully!");
+        reset();
+        setImageUrl("");
+        queryClient.invalidateQueries(["camps"]);
       } else {
         toast(`Error: ${response.data.message}`);
       }

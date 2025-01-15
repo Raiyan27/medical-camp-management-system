@@ -4,43 +4,23 @@ import { AuthContext } from "../Auth/AuthContext";
 import { getAuth, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
-import useFetchUser from "../hooks/useFetchUser";
+
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, admin } = useContext(AuthContext);
   const [email, setEmail] = useState(null);
   const [userData, setUserData] = useState("guest");
-  const [admin, setAdmin] = useState(false);
+
   const auth = getAuth();
   const location = useLocation();
   const axiosPublic = useAxiosPublic();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (currentUser?.email) {
-        try {
-          const response = await axiosPublic.get("/user", {
-            params: { email: currentUser.email },
-          });
-          setUserData(response.data);
-          setAdmin(response.data.admin);
-          setEmail(currentUser.email);
-        } catch (error) {
-          console.error("Error fetching user:", error);
-          toast("Failed to fetch user details");
-        }
-      } else {
-        setUserData("guest");
-        setAdmin(false);
-        setEmail(null);
-      }
-    };
-
-    fetchUser();
-  }, [currentUser?.email]);
+    setIsDropdownOpen(false);
+  }, [location]);
 
   const handleLogout = async () => {
     try {
@@ -65,93 +45,95 @@ const Navbar = () => {
           <span className="text-lg font-bold ">Medical Camp MS</span>
         </Link>
 
-        <div className="hidden md:flex space-x-6">
-          <Link to="/" className="hover:text-secondary">
-            Home
-          </Link>
-          <Link to="/available-camps" className="hover:text-secondary">
-            Available Camps
-          </Link>
-          {!currentUser && (
-            <Link
-              to="/join-us"
-              className="bg-white text-primary px-4 py-2 rounded hover:bg-gray-100"
-            >
-              Join Us
+        <div className="flex items-center justify-center gap-6">
+          <div className="hidden md:flex space-x-6 justify-center items-center">
+            <Link to="/" className="hover:text-secondary">
+              Home
             </Link>
-          )}
-        </div>
-
-        <div className="md:hidden">
-          <button
-            className="text-white focus:outline-none"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {currentUser && (
-          <div className="relative">
-            <img
-              src={currentUser.photoURL}
-              alt="Profile"
-              className="h-10 w-10 rounded-full cursor-pointer"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            />
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
-                <p className="block px-4 py-2 text-sm font-bold">
-                  {currentUser.displayName} {admin ? "(Admin)" : ""}
-                </p>
-                {admin ? (
-                  <Link
-                    to="/user-dashboard"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                ) : (
-                  ""
-                )}
-                {admin ? (
-                  <Link
-                    to="/organizer-dashboard"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Organizer Dashboard
-                  </Link>
-                ) : (
-                  <Link
-                    to="/user-dashboard"
-                    className="block px-4 py-2 text-sm hover:bg-gray-100"
-                  >
-                    Dashboard
-                  </Link>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-red-400 text-left px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </div>
+            <Link to="/available-camps" className="hover:text-secondary">
+              Available Camps
+            </Link>
+            {!currentUser && (
+              <Link
+                to="/join-us"
+                className="bg-white text-primary px-4 py-2 rounded hover:bg-gray-100"
+              >
+                Join Us
+              </Link>
             )}
           </div>
-        )}
+
+          <div className="md:hidden">
+            <button
+              className="text-white focus:outline-none"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {currentUser && (
+            <div className="relative">
+              <img
+                src={currentUser.photoURL}
+                alt="Profile"
+                className="h-10 w-10 rounded-full cursor-pointer"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              />
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
+                  <p className="block px-4 py-2 text-sm font-bold">
+                    {currentUser.displayName} {admin ? "(Admin)" : ""}
+                  </p>
+                  {admin ? (
+                    <Link
+                      to="/user-dashboard/profile"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+                  ) : (
+                    ""
+                  )}
+                  {admin ? (
+                    <Link
+                      to="/organizer-dashboard/profile"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Organizer Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/user-dashboard/profile"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-red-400 text-left px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {isDropdownOpen && !currentUser && (

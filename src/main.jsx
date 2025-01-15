@@ -13,12 +13,13 @@ import { Register } from "./pages/Register";
 import { AuthProvider } from "./Auth/AuthContext";
 import AvailableCamps from "./pages/AvailableCamps";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
-import OrganizerProfile from "./components/OrganizerDashboard/OrganizerProfile";
+
 import AddCamp from "./components/OrganizerDashboard/AddCamp";
 import ManageUsers from "./components/OrganizerDashboard/ManageUsers";
 import ManageCamps from "./components/OrganizerDashboard/ManageCamps";
 import CampDetails from "./pages/CampDetails";
 import PrivateRoute from "./utils/PrivateRoute";
+import AdminRoute from "./utils/AdminRoute";
 import UserDashboard from "./pages/UserDashboard";
 import Analytics from "./components/UserDashboard/Analytics";
 
@@ -54,9 +55,9 @@ const router = createBrowserRouter([
       {
         path: "/organizer-dashboard",
         element: (
-          <PrivateRoute>
+          <AdminRoute>
             <OrganizerDashboard />
-          </PrivateRoute>
+          </AdminRoute>
         ),
         children: [
           {
