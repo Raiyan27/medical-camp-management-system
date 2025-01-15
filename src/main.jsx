@@ -5,6 +5,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 import Root from "./pages/Root";
 import Home from "./pages/Home";
@@ -13,6 +15,7 @@ import { Register } from "./pages/Register";
 import { AuthProvider } from "./Auth/AuthContext";
 import AvailableCamps from "./pages/AvailableCamps";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
+import { ErrorPage } from "./components/ErrorPage";
 
 import AddCamp from "./components/OrganizerDashboard/AddCamp";
 import ManageUsers from "./components/OrganizerDashboard/ManageUsers";
@@ -27,6 +30,7 @@ import RegisteredCamps from "./components/UserDashboard/RegisteredCamps";
 import UserProfile from "./components/UserDashboard/UserProfile";
 
 const queryClient = new QueryClient();
+const stripePromise = loadStripe(import.meta.env.VITE_PAYMENT_GATEWAY_PK);
 const router = createBrowserRouter([
   {
     path: "/",
@@ -106,19 +110,21 @@ const router = createBrowserRouter([
       },
     ],
 
-    // errorElement: <ErrorPage />,
+    errorElement: <ErrorPage />,
   },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-        <ToastContainer position="top-center" />
-      </AuthProvider>
-    </QueryClientProvider>{" "}
+    <Elements stripe={stripePromise}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ThemeProvider>
+            <RouterProvider router={router} />
+          </ThemeProvider>
+          <ToastContainer position="top-center" />
+        </AuthProvider>
+      </QueryClientProvider>{" "}
+    </Elements>
   </StrictMode>
 );

@@ -8,6 +8,7 @@ import { AuthContext } from "../../Auth/AuthContext";
 import Search from "../Search";
 import { MdDoneOutline } from "react-icons/md";
 import { FeedbackDialog } from "./FeedbackDialogue";
+import PaymentModal from "../PaymentModal";
 
 const fetchRegisteredCamps = async (userEmail, axiosSecure) => {
   const response = await axiosSecure.get(
@@ -20,7 +21,6 @@ const RegisteredCamps = () => {
   const { currentUser } = useContext(AuthContext);
   const email = currentUser.email;
   const axiosSecure = useAxiosSecure();
-  const navigate = useNavigate();
 
   const { data, status } = useQuery({
     queryKey: ["registeredCamps", currentUser.email],
@@ -31,18 +31,15 @@ const RegisteredCamps = () => {
   const [filteredCamps, setFilteredCamps] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
-  const [modalOpen, setModalOpen] = useState(false); // state to control modal visibility
-  const [selectedCamp, setSelectedCamp] = useState(null); // store selected camp for feedback
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCamp, setSelectedCamp] = useState(null);
+  const [paymentData, setPaymentData] = useState({});
 
   useEffect(() => {
     if (data) {
       setFilteredCamps(data);
     }
   }, [data]);
-
-  const handlePayment = (campId) => {
-    navigate(`/payment/${campId}`);
-  };
 
   const handleCancel = (campId, paymentStatus, confirmationStatus) => {
     if (paymentStatus !== "pending" || confirmationStatus !== "pending") {
@@ -124,6 +121,26 @@ const RegisteredCamps = () => {
     setFilteredCamps(updatedCamps);
   };
 
+  const handlePayment = (camp) => {
+    setPaymentData({
+      camp: camp,
+      amount: camp.fees,
+      email: currentUser.email,
+    });
+    setModalOpen(true);
+  };
+
+  const handlePaymentSuccess = (regId) => {
+    const updatedCamps = filteredCamps.map((camp) => {
+      if (camp._id === regId) {
+        return { ...camp, paymentStatus: "paid" };
+      }
+      return camp;
+    });
+    setFilteredCamps(updatedCamps);
+    setModalOpen(false);
+  };
+
   if (status === "loading") return <p>Loading camps...</p>;
 
   return (
@@ -180,7 +197,7 @@ const RegisteredCamps = () => {
                     {camp.paymentStatus === "pending" && (
                       <>
                         <button
-                          onClick={() => handlePayment(camp._id)}
+                          onClick={() => handlePayment(camp)}
                           className="text-white bg-primary px-4 py-2 rounded-lg"
                         >
                           Pay
@@ -283,6 +300,14 @@ const RegisteredCamps = () => {
           onFeedbackSubmit={handleFeedbackSubmit}
         />
       )}
+      <PaymentModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        camp={paymentData.camp}
+        amount={paymentData.amount}
+        email={paymentData.email}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };
