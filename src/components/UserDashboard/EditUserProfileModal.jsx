@@ -102,7 +102,7 @@ const EditUserProfileModal = ({
       onClick={onClose}
     >
       <div
-        className="bg-white p-8 rounded-lg max-w-lg mx-auto z-50"
+        className="bg-white p-8 rounded-lg w-3/4 md:w-2/4 mx-auto z-50"
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-2xl font-bold mb-6">Edit Profile</h3>

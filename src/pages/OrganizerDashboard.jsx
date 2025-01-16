@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { FaUsersCog } from "react-icons/fa";
+import { GiCampingTent } from "react-icons/gi";
+import { MdAdminPanelSettings } from "react-icons/md";
+import { TbCampfire } from "react-icons/tb";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 const OrganizerDashboard = () => {
@@ -8,7 +12,7 @@ const OrganizerDashboard = () => {
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      <div className="hidden lg:block w-44 bg-gray-800 text-white p-6">
+      <div className="hidden lg:block w-52 bg-gray-800 text-white p-6">
         <h2 className="text-2xl font-bold text-center mb-8">Dashboard Menu</h2>
         <ul className="space-y-4">
           <li>
@@ -16,11 +20,12 @@ const OrganizerDashboard = () => {
               to="profile"
               className={({ isActive }) =>
                 isActive
-                  ? "text-primary font-bold"
-                  : "text-white hover:text-primary"
+                  ? "text-primary font-bold flex items-center"
+                  : "text-white hover:text-primary flex items-center"
               }
             >
-              Profile
+              <MdAdminPanelSettings className="mr-2" />
+              Organizer Profile
             </NavLink>
           </li>
           <li>
@@ -28,10 +33,11 @@ const OrganizerDashboard = () => {
               to="add-camp"
               className={({ isActive }) =>
                 isActive
-                  ? "text-primary font-bold"
-                  : "text-white hover:text-primary"
+                  ? "text-primary font-bold flex items-center"
+                  : "text-white hover:text-primary flex items-center"
               }
             >
+              <TbCampfire className="mr-2" />
               Add A Camp
             </NavLink>
           </li>
@@ -40,10 +46,11 @@ const OrganizerDashboard = () => {
               to="manage-camps"
               className={({ isActive }) =>
                 isActive
-                  ? "text-primary font-bold"
-                  : "text-white hover:text-primary"
+                  ? "text-primary font-bold flex items-center"
+                  : "text-white hover:text-primary flex items-center"
               }
             >
+              <GiCampingTent className="mr-2" />
               Manage Camps
             </NavLink>
           </li>
@@ -52,10 +59,11 @@ const OrganizerDashboard = () => {
               to="manage-users"
               className={({ isActive }) =>
                 isActive
-                  ? "text-primary font-bold"
-                  : "text-white hover:text-primary"
+                  ? "text-primary font-bold flex items-center"
+                  : "text-white hover:text-primary flex items-center"
               }
             >
+              <FaUsersCog className="mr-2" />
               Manage Users
             </NavLink>
           </li>
@@ -90,11 +98,12 @@ const OrganizerDashboard = () => {
                 to="profile"
                 className={({ isActive }) =>
                   isActive
-                    ? "text-primary font-bold"
-                    : "text-white hover:text-primary"
+                    ? "text-primary font-bold flex items-center"
+                    : "text-white hover:text-primary flex items-center"
                 }
               >
-                Profile
+                <MdAdminPanelSettings className="mr-2" />
+                Organizer Profile
               </NavLink>
             </li>
             <li>
@@ -102,10 +111,11 @@ const OrganizerDashboard = () => {
                 to="add-camp"
                 className={({ isActive }) =>
                   isActive
-                    ? "text-primary font-bold"
-                    : "text-white hover:text-primary"
+                    ? "text-primary font-bold flex items-center"
+                    : "text-white hover:text-primary flex items-center"
                 }
               >
+                <TbCampfire className="mr-2" />
                 Add A Camp
               </NavLink>
             </li>
@@ -114,10 +124,11 @@ const OrganizerDashboard = () => {
                 to="manage-camps"
                 className={({ isActive }) =>
                   isActive
-                    ? "text-primary font-bold"
-                    : "text-white hover:text-primary"
+                    ? "text-primary font-bold flex items-center"
+                    : "text-white hover:text-primary flex items-center"
                 }
               >
+                <GiCampingTent className="mr-2" />
                 Manage Camps
               </NavLink>
             </li>
@@ -126,10 +137,11 @@ const OrganizerDashboard = () => {
                 to="manage-users"
                 className={({ isActive }) =>
                   isActive
-                    ? "text-primary font-bold"
-                    : "text-white hover:text-primary"
+                    ? "text-primary font-bold flex items-center"
+                    : "text-white hover:text-primary flex items-center"
                 }
               >
+                <FaUsersCog className="mr-2" />
                 Manage Users
               </NavLink>
             </li>

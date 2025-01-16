@@ -67,7 +67,9 @@ const CampDetails = () => {
   if (!camp) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Camp details not found.</p>
+        <div className="min-h-screen flex items-center justify-center">
+          <Spinner className="h-8 w-8" />
+        </div>
       </div>
     );
   }
@@ -77,8 +79,8 @@ const CampDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="w-full rounded-lg overflow-hidden shadow-lg bg-gray-100">
           <img
-            src={camp.image || "https://placehold.co/600x400"}
-            alt={camp.campName}
+            src={camp?.image || "https://placehold.co/600x400"}
+            alt={camp?.campName}
             className="w-full h-64 sm:h-full object-cover rounded-lg"
           />
         </div>
@@ -87,8 +89,9 @@ const CampDetails = () => {
             {camp.campName}
           </h2>
           <p className="text-sm lg:text-base text-gray-600">
-            <strong className="font-semibold">Location:</strong> {camp.location}{" "}
-            |<strong className="font-semibold"> Date & Time:</strong>{" "}
+            <strong className="font-semibold">Location:</strong>{" "}
+            {camp?.location} |
+            <strong className="font-semibold"> Date & Time:</strong>{" "}
             {new Date(camp.dateTime).toLocaleString()}
           </p>
           <p className="text-sm lg:text-base text-gray-600">
@@ -96,18 +99,18 @@ const CampDetails = () => {
             {camp.professionalName}
           </p>
           <p className="text-sm lg:text-base text-gray-600">
-            <strong className="font-semibold">Fees:</strong> ${camp.fees}
+            <strong className="font-semibold">Fees:</strong> ${camp?.fees}
           </p>
           <p className="text-sm lg:text-base text-gray-600">
             <strong className="font-semibold">Participants Registered:</strong>{" "}
-            {camp.participantCount}
+            {camp?.participantCount}
           </p>
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-lg lg:text-xl font-semibold text-gray-900">
               About the Camp
             </h3>
             <p className="text-sm lg:text-base text-gray-700">
-              {camp.description}
+              {camp?.description}
             </p>
           </div>
           <div className="flex justify-center">

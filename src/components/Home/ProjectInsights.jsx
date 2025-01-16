@@ -3,9 +3,7 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Typography,
-  Button,
 } from "@material-tailwind/react";
 
 export function ProjectInsights() {
@@ -17,7 +15,7 @@ export function ProjectInsights() {
         className="mb-4 grid h-28 place-items-center my-12"
       >
         <Typography variant="h3" color="white">
-          Project Insights
+          What We Do
         </Typography>
       </CardHeader>
       <Card className="w-full shadow-lg">

@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { CgProfile } from "react-icons/cg";
+import { FaMoneyCheckAlt } from "react-icons/fa";
+import { GiCampingTent } from "react-icons/gi";
+import { MdAnalytics } from "react-icons/md";
 import { Link, Outlet, NavLink } from "react-router-dom";
 
 const UserDashboard = () => {
@@ -8,8 +12,7 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Sidebar for Large Screens */}
-      <div className="hidden lg:block w-44 bg-gray-800 text-white p-6">
+      <div className="hidden lg:block w-52 bg-gray-800 text-white p-6">
         <h2 className="text-2xl font-bold mb-6">Participant Dashboard</h2>
         <ul>
           <li>
@@ -17,10 +20,13 @@ const UserDashboard = () => {
               to="profile"
               className={({ isActive }) =>
                 `block mb-4 ${
-                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                  isActive
+                    ? "text-accent font-bold flex items-center"
+                    : "hover:text-accent flex items-center"
                 }`
               }
             >
+              <CgProfile className="mr-2" />
               Profile
             </NavLink>
           </li>
@@ -29,10 +35,13 @@ const UserDashboard = () => {
               to="analytics"
               className={({ isActive }) =>
                 `block mb-4 ${
-                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                  isActive
+                    ? "text-accent font-bold flex items-center"
+                    : "hover:text-accent flex items-center"
                 }`
               }
             >
+              <MdAnalytics className="mr-2" />
               Analytics
             </NavLink>
           </li>
@@ -41,10 +50,13 @@ const UserDashboard = () => {
               to="registered-camps"
               className={({ isActive }) =>
                 `block mb-4 ${
-                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                  isActive
+                    ? "text-accent font-bold flex items-center"
+                    : "hover:text-accent flex items-center"
                 }`
               }
             >
+              <GiCampingTent className="mr-2" />
               Registered Camps
             </NavLink>
           </li>
@@ -53,17 +65,19 @@ const UserDashboard = () => {
               to="payment-history"
               className={({ isActive }) =>
                 `block mb-4 ${
-                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                  isActive
+                    ? "text-accent font-bold flex items-center"
+                    : "hover:text-accent flex items-center"
                 }`
               }
             >
+              <FaMoneyCheckAlt className="mr-2" />
               Payment History
             </NavLink>
           </li>
         </ul>
       </div>
 
-      {/* Mobile Sidebar */}
       <div className="lg:hidden w-full bg-gray-800 text-white p-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">Participant Dashboard</h2>
@@ -92,10 +106,13 @@ const UserDashboard = () => {
                 to="profile"
                 className={({ isActive }) =>
                   `block text-white ${
-                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                    isActive
+                      ? "text-blue-400 font-bold flex items-center"
+                      : "hover:text-blue-400 flex items-center"
                   }`
                 }
               >
+                <CgProfile className="mr-2" />
                 Profile
               </NavLink>
             </li>
@@ -104,10 +121,13 @@ const UserDashboard = () => {
                 to="analytics"
                 className={({ isActive }) =>
                   `block text-white ${
-                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                    isActive
+                      ? "text-blue-400 font-bold flex items-center"
+                      : "hover:text-blue-400 flex items-center"
                   }`
                 }
               >
+                <MdAnalytics className="mr-2" />
                 Analytics
               </NavLink>
             </li>
@@ -116,10 +136,13 @@ const UserDashboard = () => {
                 to="registered-camps"
                 className={({ isActive }) =>
                   `block text-white ${
-                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                    isActive
+                      ? "text-blue-400 font-bold flex items-center"
+                      : "hover:text-blue-400 flex items-center"
                   }`
                 }
               >
+                <GiCampingTent className="mr-2" />
                 Registered Camps
               </NavLink>
             </li>
@@ -128,18 +151,19 @@ const UserDashboard = () => {
                 to="payment-history"
                 className={({ isActive }) =>
                   `block text-white ${
-                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                    isActive
+                      ? "text-blue-400 font-bold flex items-center"
+                      : "hover:text-blue-400 flex items-center"
                   }`
                 }
               >
+                <FaMoneyCheckAlt className="mr-2" />
                 Payment History
               </NavLink>
             </li>
           </ul>
         )}
       </div>
-
-      {/* Main Content */}
       <div className="flex-1 p-6">
         <Outlet />
       </div>
