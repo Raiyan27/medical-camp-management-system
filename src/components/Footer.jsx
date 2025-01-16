@@ -5,7 +5,6 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-white py-8 px-6">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Logo and About Section */}
         <div>
           <Link to="/" className="flex items-center space-x-3 mb-4">
             <img
@@ -13,7 +12,9 @@ const Footer = () => {
               alt="MCMS Logo"
               className="h-10 w-10 rounded-full"
             />
-            <span className="text-lg font-bold text-text">Medical Camp MS</span>
+            <span className="text-lg font-bold text-white">
+              Medical Camp MS
+            </span>
           </Link>
           <p className="text-sm">
             Helping organizers and participants easily manage and coordinate
@@ -21,7 +22,6 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Quick Links Section */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2">
@@ -40,15 +40,9 @@ const Footer = () => {
                 Join Us
               </Link>
             </li>
-            <li>
-              <Link to="/contact-us" className="hover:text-secondary">
-                Contact Us
-              </Link>
-            </li>
           </ul>
         </div>
 
-        {/* Contact Information */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
           <ul className="space-y-2">

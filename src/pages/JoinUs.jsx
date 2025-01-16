@@ -63,10 +63,9 @@ export function JoinUs() {
         email: result.user?.email,
         admin: false,
       };
-      axiosPublic.post("/user", userInfo).then((res) => {
-        toast.success(`Welcome, ${user.displayName}!`);
-        navigate("/");
-      });
+      toast.success(`Welcome, ${user.displayName}!`);
+      navigate("/");
+      axiosPublic.post("/user", userInfo);
     } catch (error) {
       toast.error("Google login failed. Please try again.");
     } finally {

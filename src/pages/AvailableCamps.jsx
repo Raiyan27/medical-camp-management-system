@@ -4,9 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import Search from "../components/Search";
 import { IoLocation } from "react-icons/io5";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaTh, FaThLarge, FaThList } from "react-icons/fa";
 import { IoIosPeople } from "react-icons/io";
 import { FaUserDoctor } from "react-icons/fa6";
+import { Spinner } from "@material-tailwind/react";
+import Select from "react-select";
 
 const fetchCamps = async () => {
   const axiosPublic = useAxiosPublic();
@@ -17,6 +19,7 @@ const fetchCamps = async () => {
 const AvailableCamps = () => {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("alphabetical");
+  const [layout, setLayout] = useState("three-columns");
 
   const {
     data: camps,
@@ -27,8 +30,12 @@ const AvailableCamps = () => {
     queryFn: fetchCamps,
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>An error occurred: {error.message}</p>;
+  if (isLoading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
 
   const sortedCamps = Array.isArray(camps)
     ? camps.sort((a, b) => {
@@ -50,32 +57,59 @@ const AvailableCamps = () => {
     : [];
 
   const filteredCamps = search
-    ? sortedCamps.filter((camp) =>
-        camp.campName?.toLowerCase().includes(search.toLowerCase())
+    ? sortedCamps.filter(
+        (camp) =>
+          camp.campName?.toLowerCase().includes(search.toLowerCase()) ||
+          camp.location?.toLowerCase().includes(search.toLowerCase())
       )
     : sortedCamps;
 
+  const options = [
+    { value: "alphabetical", label: "Alphabetical (Camp Name)" },
+    { value: "most-registered", label: "Most Registered" },
+    { value: "camp-fees", label: "Camp Fees" },
+  ];
+
+  const handleSortChange = (selectedOption) => {
+    setSortBy(selectedOption.value);
+  };
+
+  const toggleLayout = () => {
+    setLayout(layout === "three-columns" ? "two-columns" : "three-columns");
+  };
+
   return (
     <div className="max-w-screen-xl mx-auto my-8 px-4 min-h-screen">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+        <div className="mt-4 w-full md:w-2/4">
           <Search onSearch={setSearch} />
         </div>
-
-        <div className="flex gap-4">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md"
+        <div className="hidden md:flex flex-1 justify-end mb-6 mr-4 mt-6">
+          <button
+            onClick={toggleLayout}
+            className="py-2 px-4 bg-primary text-white rounded-md hover:bg-accent"
           >
-            <option value="alphabetical">Alphabetical (Camp Name)</option>
-            <option value="most-registered">Most Registered</option>
-            <option value="camp-fees">Camp Fees</option>
-          </select>
+            {layout === "three-columns" ? (
+              <FaTh className="text-xl" />
+            ) : (
+              <FaThLarge className="text-xl" />
+            )}
+          </button>
         </div>
+        <Select
+          value={options.find((option) => option.value === sortBy)}
+          onChange={handleSortChange}
+          options={options}
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
       </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={`grid gap-6 grid-cols-1 ${
+          layout === "three-columns" ? "md:grid-cols-3" : "md:grid-cols-2"
+        }`}
+      >
         {filteredCamps.length === 0 ? (
           <p className="col-span-full text-center text-4xl">
             No camps found based on your search criteria.
@@ -97,13 +131,13 @@ const AvailableCamps = () => {
                 </h3>
                 <div className="flex items-center justify-between">
                   <div className="flex justify-center items-center">
-                    <FaCalendarAlt className="text-primary" />
+                    <FaCalendarAlt className="text-primary mr-1" />
                     <p className="text-sm text-gray-600">
-                      {new Date(camp.dateTime).toLocaleString()}
+                      {new Date(camp.dateTime).toLocaleString().slice(0, 16)}
                     </p>
                   </div>
                   <div className="flex justify-center items-center">
-                    <IoLocation className="text-primary" /> {camp.location}
+                    <IoLocation className="text-primary mr-1" /> {camp.location}
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 my-2">
@@ -118,7 +152,7 @@ const AvailableCamps = () => {
                 <p className="text-sm text-gray-600">
                   <div className="flex justify-start items-center gap-2">
                     <IoIosPeople className="text-gray-600" />{" "}
-                    <p>{camp.participantCount || "N/A"}</p>
+                    <p>{camp.participantCount}</p>
                   </div>
                 </p>
               </div>

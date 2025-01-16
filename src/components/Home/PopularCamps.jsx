@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { CardHeader, Spinner, Typography } from "@material-tailwind/react";
 
 const fetchCamps = async () => {
   const axiosPublic = useAxiosPublic();
@@ -23,14 +24,24 @@ const PopularCamps = () => {
     queryFn: fetchCamps,
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading camps: {error.message}</p>;
+  if (isLoading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
 
   return (
-    <section className="container mx-auto py-8 px-8 md:px-0">
-      <h2 className="text-2xl font-bold mb-6 text-center my-12">
-        Popular Medical Camps
-      </h2>
+    <section className="container mx-auto py-8 px-8 md:px-0 my-12">
+      <CardHeader
+        variant="gradient"
+        color="blue"
+        className="mb-4 grid h-28 place-items-center my-12 text-center"
+      >
+        <Typography variant="h3" color="white">
+          Popular Medical Camps
+        </Typography>
+      </CardHeader>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.map((camp) => (
           <div

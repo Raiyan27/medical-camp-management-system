@@ -72,6 +72,7 @@ export function Register() {
         email,
         password
       );
+
       const user = userCredential.user;
       await updateProfile(user, {
         displayName: name,
@@ -82,16 +83,10 @@ export function Register() {
         email: email,
         admin: false,
       };
-      axiosPublic.post("/user", userInfo).then((res) => {
-        if (res.data.insertedId) {
-          console.log(`user added ${userInfo}`);
-          toast.success("Registration successful!");
-          navigate("/");
-        }
-      });
+      toast.success("Registration successful!");
+      navigate("/");
+      axiosPublic.post("/user", userInfo);
     } catch (error) {
-      console.error(error);
-
       if (error.code === "auth/email-already-in-use") {
         toast.error(
           "This email is already in use. Please try a different one."
@@ -116,12 +111,10 @@ export function Register() {
         email: result.user?.email,
         admin: false,
       };
-      axiosPublic.post("/user", userInfo).then((res) => {
-        toast.success("Successfully logged in!");
-        navigate("/");
-      });
+      toast.success("Successfully logged in!");
+      navigate("/");
+      axiosPublic.post("/user", userInfo);
     } catch (error) {
-      console.error(error);
       toast.error("Google login failed. Please try again.");
     } finally {
       setIsLoading(false);

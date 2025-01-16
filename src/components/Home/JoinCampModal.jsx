@@ -9,7 +9,6 @@ const JoinCampModal = ({ camp }) => {
           <p>Camp Fees: {camp.fees}</p>
           <p>Location: {camp.location}</p>
           <p>Professional: {camp.professional}</p>
-          {/* Add form fields here */}
           <button
             type="submit"
             className="mt-4 bg-primary text-white px-4 py-2 rounded"

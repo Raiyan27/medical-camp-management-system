@@ -40,7 +40,7 @@ const EditCampModal = ({ camp, onClose, refetch, setFilteredCamps }) => {
       setValue("dateTime", data.dateTime);
       setValue("location", data.location);
       setValue("professionalName", data.professionalName);
-      setValue("participantCount", data.participantCount);
+      setValue("description", data.description);
     }
   }, [data, setValue]);
 
@@ -79,7 +79,7 @@ const EditCampModal = ({ camp, onClose, refetch, setFilteredCamps }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 lg:w-2/4">
         <h3 className="text-xl font-semibold mb-4">Edit Camp Details</h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
@@ -134,19 +134,19 @@ const EditCampModal = ({ camp, onClose, refetch, setFilteredCamps }) => {
               <p className="text-red-500">{errors.professionalName.message}</p>
             )}
           </div>
+
           <div className="mb-4">
-            <label className="block mb-2">Participants</label>
-            <input
-              readOnly
-              type="number"
-              name="participantCount"
-              {...register("participantCount", {
-                required: "Participant count is required",
+            <label className="block mb-2">Camp Description</label>
+            <textarea
+              name="description"
+              {...register("description", {
+                required: "Camp description is required",
               })}
               className="w-full p-2 border rounded"
+              rows="4"
             />
-            {errors.participantCount && (
-              <p className="text-red-500">{errors.participantCount.message}</p>
+            {errors.description && (
+              <p className="text-red-500">{errors.description.message}</p>
             )}
           </div>
           <div className="flex justify-between">

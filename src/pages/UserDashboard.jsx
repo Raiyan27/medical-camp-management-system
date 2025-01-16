@@ -8,14 +8,18 @@ const UserDashboard = () => {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Sidebar for Large Screens */}
       <div className="hidden lg:block w-44 bg-gray-800 text-white p-6">
         <h2 className="text-2xl font-bold mb-6">Participant Dashboard</h2>
         <ul>
           <li>
             <NavLink
               to="profile"
-              className="block mb-4 hover:text-accent"
-              activeClassName="text-accent font-bold"
+              className={({ isActive }) =>
+                `block mb-4 ${
+                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                }`
+              }
             >
               Profile
             </NavLink>
@@ -23,18 +27,23 @@ const UserDashboard = () => {
           <li>
             <NavLink
               to="analytics"
-              className="block mb-4 hover:text-accent"
-              activeClassName="text-accent font-bold"
+              className={({ isActive }) =>
+                `block mb-4 ${
+                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                }`
+              }
             >
               Analytics
             </NavLink>
           </li>
-
           <li>
             <NavLink
               to="registered-camps"
-              className="block mb-4 hover:text-accent"
-              activeClassName="text-accent font-bold"
+              className={({ isActive }) =>
+                `block mb-4 ${
+                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                }`
+              }
             >
               Registered Camps
             </NavLink>
@@ -42,8 +51,11 @@ const UserDashboard = () => {
           <li>
             <NavLink
               to="payment-history"
-              className="block mb-4 hover:text-accent"
-              activeClassName="text-accent font-bold"
+              className={({ isActive }) =>
+                `block mb-4 ${
+                  isActive ? "text-accent font-bold" : "hover:text-accent"
+                }`
+              }
             >
               Payment History
             </NavLink>
@@ -51,6 +63,7 @@ const UserDashboard = () => {
         </ul>
       </div>
 
+      {/* Mobile Sidebar */}
       <div className="lg:hidden w-full bg-gray-800 text-white p-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">Participant Dashboard</h2>
@@ -77,8 +90,11 @@ const UserDashboard = () => {
             <li>
               <NavLink
                 to="profile"
-                className="block text-white hover:text-accent"
-                activeClassName="text-accent font-bold"
+                className={({ isActive }) =>
+                  `block text-white ${
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                  }`
+                }
               >
                 Profile
               </NavLink>
@@ -86,18 +102,23 @@ const UserDashboard = () => {
             <li>
               <NavLink
                 to="analytics"
-                className="block text-white hover:text-accent"
-                activeClassName="text-accent font-bold"
+                className={({ isActive }) =>
+                  `block text-white ${
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                  }`
+                }
               >
                 Analytics
               </NavLink>
             </li>
-
             <li>
               <NavLink
                 to="registered-camps"
-                className="block text-white hover:text-accent"
-                activeClassName="text-accent font-bold"
+                className={({ isActive }) =>
+                  `block text-white ${
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                  }`
+                }
               >
                 Registered Camps
               </NavLink>
@@ -105,8 +126,11 @@ const UserDashboard = () => {
             <li>
               <NavLink
                 to="payment-history"
-                className="block text-white hover:text-accent"
-                activeClassName="text-accent font-bold"
+                className={({ isActive }) =>
+                  `block text-white ${
+                    isActive ? "text-blue-400 font-bold" : "hover:text-blue-400"
+                  }`
+                }
               >
                 Payment History
               </NavLink>
@@ -115,6 +139,7 @@ const UserDashboard = () => {
         )}
       </div>
 
+      {/* Main Content */}
       <div className="flex-1 p-6">
         <Outlet />
       </div>

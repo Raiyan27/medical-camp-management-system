@@ -9,6 +9,7 @@ import Search from "../Search";
 import { MdDoneOutline } from "react-icons/md";
 import { FeedbackDialog } from "./FeedbackDialogue";
 import PaymentModal from "../PaymentModal";
+import { Spinner } from "@material-tailwind/react";
 
 const fetchRegisteredCamps = async (userEmail, axiosSecure) => {
   const response = await axiosSecure.get(
@@ -35,12 +36,24 @@ const RegisteredCamps = () => {
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [paymentData, setPaymentData] = useState({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (data) {
       setFilteredCamps(data);
     }
   }, [data]);
+
+  const handleSearch = (searchTerm) => {
+    setSearchQuery(searchTerm);
+    const filteredData = data.filter(
+      (camp) =>
+        camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        camp.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredCamps(filteredData);
+    setCurrentPage(1);
+  };
 
   const handleCancel = (campId, paymentStatus, confirmationStatus) => {
     if (paymentStatus !== "pending" || confirmationStatus !== "pending") {
@@ -89,7 +102,7 @@ const RegisteredCamps = () => {
   const handleFeedback = (campId) => {
     const camp = filteredCamps.find((camp) => camp._id === campId);
     setSelectedCamp(camp);
-    setFeedbackModalOpen(true); // Open Feedback Modal
+    setFeedbackModalOpen(true);
   };
 
   const indexOfLastCamp = currentPage * campsPerPage;
@@ -101,16 +114,6 @@ const RegisteredCamps = () => {
   };
 
   const totalPages = Math.ceil(filteredCamps.length / campsPerPage);
-
-  const handleSearch = (searchTerm) => {
-    const filteredData = data.filter(
-      (camp) =>
-        camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        camp.userName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCamps(filteredData);
-    setCurrentPage(1);
-  };
 
   const handleFeedbackSubmit = (campId, rating, review) => {
     const updatedCamps = filteredCamps.map((camp) => {
@@ -143,15 +146,23 @@ const RegisteredCamps = () => {
     setPaymentModalOpen(false);
   };
 
-  if (status === "loading") return <p>Loading camps...</p>;
+  if (status === "loading")
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
 
   return (
     <div className="border p-6 rounded-lg shadow-lg ">
       <h3 className="text-2xl font-semibold mb-4">Registered Camps</h3>
       <Search onSearch={handleSearch} />
+
       {filteredCamps.length === 0 ? (
         <p className="text-center text-xl text-gray-600 mt-6">
-          You are not registered to any camps.
+          {searchQuery
+            ? "No matching data"
+            : "You are not registered to any camps."}
         </p>
       ) : (
         <div className="overflow-x-auto">
@@ -265,7 +276,7 @@ const RegisteredCamps = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          className="p-1 bg-gray-200 rounded-lg disabled:opacity-50"
         >
           Previous
         </button>
@@ -274,7 +285,7 @@ const RegisteredCamps = () => {
             <button
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
-              className={`px-4 py-2 mx-1 rounded-lg ${
+              className={`p-1 py-2 mx-1 rounded-lg ${
                 currentPage === index + 1
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-black"
@@ -288,7 +299,7 @@ const RegisteredCamps = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          className="p-1 bg-gray-200 rounded-lg disabled:opacity-50"
         >
           Next
         </button>

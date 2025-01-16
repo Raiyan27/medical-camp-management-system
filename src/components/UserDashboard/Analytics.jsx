@@ -12,6 +12,7 @@ import {
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { useContext } from "react";
 import { AuthContext } from "../../Auth/AuthContext";
+import { Spinner } from "@material-tailwind/react";
 
 const fetchPaymentsData = async (email, axiosSecure) => {
   const response = await axiosSecure.get(`/payments/${email}`);
@@ -29,7 +30,12 @@ const PaymentAnalytics = () => {
     enabled: !!email,
   });
 
-  if (status === "loading") return <p>Loading payment analytics...</p>;
+  if (status === "loading")
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
 
   if (!data || data.length === 0) {
     return <p>No payment data available for this user.</p>;

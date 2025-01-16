@@ -39,7 +39,6 @@ const UserProfile = () => {
         <Spinner className="h-10 w-10" />
       </div>
     );
-  if (error) return <p>Error loading profile: {error.message}</p>;
 
   return (
     <div>

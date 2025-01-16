@@ -14,6 +14,7 @@ const AddCamp = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
   } = useForm();
   const queryClient = useQueryClient();
   const { currentUser } = useContext(AuthContext);
@@ -56,6 +57,10 @@ const AddCamp = () => {
   });
 
   const onSubmit = async (data) => {
+    if (!imageUrl) {
+      toast.error("Image is required for the camp.");
+      return;
+    }
     try {
       const campData = {
         campName: data.campName,
@@ -64,7 +69,7 @@ const AddCamp = () => {
         dateTime: data.dateTime,
         location: data.location,
         professionalName: data.professionalName,
-        participantCount: data.participantCount,
+        participantCount: 0,
         description: data.description,
         createdBy: email,
       };
@@ -232,8 +237,11 @@ const AddCamp = () => {
             {...register("participantCount", {
               required: "Participant count is required",
               min: { value: 0, message: "Count cannot be less than 0" },
+              valueAsNumber: true,
             })}
             className="w-full p-3 border rounded-md"
+            readOnly
+            defaultValue={0}
           />
           {errors.participantCount && (
             <p className="text-red-500 text-sm">

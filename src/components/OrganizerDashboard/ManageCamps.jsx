@@ -6,6 +6,7 @@ import Search from "../Search";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import EditCampModal from "./EditCampModal";
+import { Spinner } from "@material-tailwind/react";
 
 const fetchCamps = async (axiosPublic) => {
   const response = await axiosPublic.get("/camps");
@@ -20,24 +21,33 @@ const ManageCamps = () => {
     queryFn: () => fetchCamps(axiosPublic),
     refetchOnWindowFocus: true,
   });
+  console.log(data);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [campsPerPage] = useState(10);
   const [filteredCamps, setFilteredCamps] = useState([]);
   const [selectedCamp, setSelectedCamp] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCamps, setCurrentCamps] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    if (searchTerm === "") {
+      setFilteredCamps(data || []);
+    }
+  }, [searchTerm, data]);
 
   const handleSearch = (searchTerm) => {
-    if (data) {
-      const filteredData = data.filter(
-        (camp) =>
-          camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          camp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          camp.professionalName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredCamps(filteredData);
-      setCurrentPage(1);
-    }
+    setSearchTerm(searchTerm);
+    const filteredData = data.filter(
+      (camp) =>
+        camp.campName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        camp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        camp.professionalName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    setCurrentCamps(filteredData);
+    setCurrentPage(1);
   };
 
   const handleDelete = (id) => {
@@ -90,11 +100,14 @@ const ManageCamps = () => {
   const indexOfLastCamp = currentPage * campsPerPage;
   const indexOfFirstCamp = indexOfLastCamp - campsPerPage;
 
-  const currentCamps =
-    (filteredCamps.length ? filteredCamps : data)?.slice(
-      indexOfFirstCamp,
-      indexOfLastCamp
-    ) || [];
+  useEffect(() => {
+    setCurrentCamps(
+      (filteredCamps.length ? filteredCamps : data)?.slice(
+        indexOfFirstCamp,
+        indexOfLastCamp
+      ) || []
+    );
+  }, [data, filteredCamps, indexOfFirstCamp, indexOfLastCamp]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -115,7 +128,11 @@ const ManageCamps = () => {
   }, [data, filteredCamps.length]);
 
   if (status === "loading") {
-    return <p>Loading camps...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner className="h-8 w-8" />
+      </div>
+    );
   }
   if (status === "error") {
     return <p>Error fetching camps: {error.message}</p>;
@@ -140,32 +157,40 @@ const ManageCamps = () => {
             </tr>
           </thead>
           <tbody>
-            {currentCamps.map((camp) => (
-              <tr key={camp._id} className="border-b">
-                <td className="p-3">{camp.campName}</td>
-                <td className="p-3">
-                  {new Date(camp.dateTime).toLocaleString()}
-                </td>
-                <td className="p-3">{camp.location}</td>
-                <td className="p-3">{camp.professionalName}</td>
-                <td className="p-3">{camp.participantCount}</td>
-                <td className="p-3 flex items-center">
-                  <Link
-                    onClick={() => handleEdit(camp)}
-                    className="text-primary hover:text-accent mr-4"
-                  >
-                    Edit
-                  </Link>
-                  |
-                  <button
-                    onClick={() => handleDelete(camp._id)}
-                    className="text-red-500 hover:text-red-700 ml-4"
-                  >
-                    Delete
-                  </button>
+            {currentCamps.length > 0 ? (
+              currentCamps.map((camp) => (
+                <tr key={camp._id} className="border-b">
+                  <td className="p-3">{camp.campName}</td>
+                  <td className="p-3">
+                    {new Date(camp.dateTime).toLocaleString()}
+                  </td>
+                  <td className="p-3">{camp.location}</td>
+                  <td className="p-3">{camp.professionalName}</td>
+                  <td className="p-3">{camp.participantCount}</td>
+                  <td className="p-3 flex items-center">
+                    <Link
+                      onClick={() => handleEdit(camp)}
+                      className="text-primary hover:text-accent mr-4"
+                    >
+                      Edit
+                    </Link>
+                    |
+                    <button
+                      onClick={() => handleDelete(camp._id)}
+                      className="text-red-500 hover:text-red-700 ml-4"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  No matching data
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -174,7 +199,7 @@ const ManageCamps = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          className="p-1 bg-gray-200 rounded-lg disabled:opacity-50"
         >
           Previous
         </button>
@@ -183,7 +208,7 @@ const ManageCamps = () => {
             <button
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
-              className={`px-4 py-2 mx-1 rounded-lg ${
+              className={`p-1 mx-1 rounded-lg ${
                 currentPage === index + 1
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-black"
@@ -197,7 +222,7 @@ const ManageCamps = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+          className="p-1 bg-gray-200 rounded-lg disabled:opacity-50"
         >
           Next
         </button>

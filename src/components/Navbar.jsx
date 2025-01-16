@@ -33,8 +33,14 @@ const Navbar = () => {
     }
   };
 
+  const getLinkClass = (path) => {
+    return location.pathname === path
+      ? "text-orange-200"
+      : "hover:text-secondary";
+  };
+
   return (
-    <nav className="bg-primary text-white py-4 px-6 sticky top-0 z-50">
+    <nav className="bg-primary text-white py-4 px-6 sticky top-0 z-30">
       <div className="container mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-3">
           <img
@@ -47,10 +53,13 @@ const Navbar = () => {
 
         <div className="flex items-center justify-center gap-6">
           <div className="hidden md:flex space-x-6 justify-center items-center">
-            <Link to="/" className="hover:text-secondary">
+            <Link to="/" className={getLinkClass("/")}>
               Home
             </Link>
-            <Link to="/available-camps" className="hover:text-secondary">
+            <Link
+              to="/available-camps"
+              className={getLinkClass("/available-camps")}
+            >
               Available Camps
             </Link>
             {!currentUser && (
@@ -150,12 +159,12 @@ const Navbar = () => {
 
       {isDropdownOpen && !currentUser && (
         <div className="md:hidden mt-4 space-y-2">
-          <Link to="/" className="block text-white hover:text-secondary">
+          <Link to="/" className={`block ${getLinkClass("/")}`}>
             Home
           </Link>
           <Link
             to="/available-camps"
-            className="block text-white hover:text-secondary"
+            className={`block ${getLinkClass("/available-camps")}`}
           >
             Available Camps
           </Link>

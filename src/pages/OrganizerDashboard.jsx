@@ -20,7 +20,7 @@ const OrganizerDashboard = () => {
                   : "text-white hover:text-primary"
               }
             >
-              Organizer Profile
+              Profile
             </NavLink>
           </li>
           <li>
@@ -94,7 +94,7 @@ const OrganizerDashboard = () => {
                     : "text-white hover:text-primary"
                 }
               >
-                Organizer Profile
+                Profile
               </NavLink>
             </li>
             <li>
