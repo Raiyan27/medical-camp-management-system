@@ -62,6 +62,9 @@ const Navbar = () => {
             >
               Available Camps
             </Link>
+            <Link to="/about-us" className={getLinkClass("/about-us")}>
+              About Us
+            </Link>
             {!currentUser && (
               <Link
                 to="/join-us"
@@ -119,6 +122,12 @@ const Navbar = () => {
                   >
                     Available Camps
                   </Link>
+                  <Link
+                    to="/about-us"
+                    className="md:hidden block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    About Us
+                  </Link>
                   {admin ? (
                     <Link
                       to="/user-dashboard/profile"
@@ -167,6 +176,9 @@ const Navbar = () => {
             className={`block ${getLinkClass("/available-camps")}`}
           >
             Available Camps
+          </Link>
+          <Link to="/about-us" className={`block ${getLinkClass("/about-us")}`}>
+            About Us
           </Link>
           <Link
             to="/join-us"

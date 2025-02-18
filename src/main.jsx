@@ -29,6 +29,7 @@ import Analytics from "./components/UserDashboard/Analytics";
 import RegisteredCamps from "./components/UserDashboard/RegisteredCamps";
 import UserProfile from "./components/UserDashboard/UserProfile";
 import PaymentHistory from "./components/UserDashboard/PaymentHistory";
+import { AboutUs } from "./pages/AboutUs";
 
 const queryClient = new QueryClient();
 const stripePromise = loadStripe(import.meta.env.VITE_PAYMENT_GATEWAY_PK);
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "/camp-details/:id",
         element: <CampDetails />,
+      },
+      {
+        path: "/about-us",
+        element: <AboutUs />,
       },
       {
         path: "/organizer-dashboard",
