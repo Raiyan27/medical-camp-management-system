@@ -6,6 +6,7 @@ import { FeedbackAndRatings } from "../components/Home/FeedbackAndRatings";
 
 import { UpcomingCamps } from "../components/Home/UpcomingCamps";
 import { Services } from "../components/Home/Services";
+import { Partners } from "../components/Home/Partners";
 
 const Home = () => {
   return (
@@ -15,7 +16,7 @@ const Home = () => {
       <Services />
       <ProjectInsights />
       <UpcomingCamps />
-
+      <Partners />
       <FeedbackAndRatings />
     </>
   );
