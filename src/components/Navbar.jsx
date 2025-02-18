@@ -62,9 +62,26 @@ const Navbar = () => {
             >
               Available Camps
             </Link>
+            {currentUser && (
+              <>
+                <Link
+                  to="/user-dashboard/registered-camps"
+                  className={getLinkClass("/user-dashboard/registered-camps")}
+                >
+                  Registered Camps
+                </Link>
+                <Link
+                  to="/user-dashboard/profile"
+                  className={getLinkClass("/user-dashboard/profile")}
+                >
+                  Profile
+                </Link>
+              </>
+            )}
             <Link to="/about-us" className={getLinkClass("/about-us")}>
               About Us
             </Link>
+
             {!currentUser && (
               <Link
                 to="/join-us"
@@ -105,6 +122,7 @@ const Navbar = () => {
                 className="h-10 w-10 rounded-full cursor-pointer"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               />
+
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
                   <p className="block px-4 py-2 text-sm font-bold">
@@ -127,6 +145,18 @@ const Navbar = () => {
                     className="md:hidden block px-4 py-2 text-sm hover:bg-gray-100"
                   >
                     About Us
+                  </Link>
+                  <Link
+                    to="/user-dashboard/registered-camps"
+                    className="md:hidden block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Registered Camps
+                  </Link>
+                  <Link
+                    to="/user-dashboard/profile"
+                    className="md:hidden block px-4 py-2 text-sm hover:bg-gray-100"
+                  >
+                    Profile
                   </Link>
                   {admin ? (
                     <Link
