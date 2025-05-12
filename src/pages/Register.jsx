@@ -246,7 +246,7 @@ export function Register() {
 
             <Typography variant="small" className="mt-6 flex justify-center">
               Already have an account?
-              <Link to="/register" className="ml-1 text-blue-500 font-bold">
+              <Link to="/join-us" className="ml-1 text-blue-500 font-bold">
                 Login
               </Link>
             </Typography>
