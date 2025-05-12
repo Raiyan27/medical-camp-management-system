@@ -5,9 +5,7 @@ import Search from "../Search";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-import { Link } from "react-router-dom";
 import { Spinner } from "@material-tailwind/react";
-import { CiCircleChevLeft, CiCircleChevRight } from "react-icons/ci";
 
 const fetchRegistrations = async (axiosPublic) => {
   const response = await axiosPublic.get("/get-all-registrations");
@@ -17,7 +15,7 @@ const fetchRegistrations = async (axiosPublic) => {
 const ManageUsers = () => {
   const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
-  const { data, status, error, refetch } = useQuery({
+  const { data, status } = useQuery({
     queryKey: ["registrations"],
     queryFn: () => fetchRegistrations(axiosPublic),
   });
@@ -91,6 +89,7 @@ const ManageUsers = () => {
               text: "There was an error updating the registration.",
               icon: "error",
             });
+            console.log(error);
           });
       }
     });
